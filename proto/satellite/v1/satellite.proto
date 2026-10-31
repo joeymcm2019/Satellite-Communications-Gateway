@@ -22,6 +22,7 @@ message SendTelemetryRequest {
   google.protobuf.Timestamp observed_at = 2;
   double battery_percent = 3;
   ConnectionStatus connection_status = 4;
+  uint64 sequence_number = 5;
 }
 
 message Command {
@@ -39,6 +40,8 @@ message CommandAcknowledgment {
 
 message TelemetryReceipt {
   bool accepted = 1;
+  string detail = 2;
+  uint64 sequence_number = 3;
 }
 
 // Contract placeholder only; no client or server is implemented.
