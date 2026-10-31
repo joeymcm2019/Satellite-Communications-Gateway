@@ -15,9 +15,9 @@ services:
   gateway:
     build: ./services/gateway
     ports:
-      - "127.0.0.1:${GATEWAY_HTTP_PORT:-8080}:${GATEWAY_HTTP_PORT:-8080}"
+      - "127.0.0.1:${GATEWAY_HTTP_PORT:-18080}:${GATEWAY_HTTP_PORT:-18080}"
     environment:
-      GATEWAY_HTTP_PORT: "${GATEWAY_HTTP_PORT:-8080}"
+      GATEWAY_HTTP_PORT: "${GATEWAY_HTTP_PORT:-18080}"
       GATEWAY_GRPC_PORT: "${GATEWAY_GRPC_PORT:-50051}"
     healthcheck:
       test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:$$GATEWAY_HTTP_PORT/health || exit 1"]

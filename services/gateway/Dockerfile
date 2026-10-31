@@ -6,5 +6,5 @@ FROM alpine:3.22
 RUN addgroup -S app && adduser -S app -G app
 COPY --from=build /gateway /usr/local/bin/gateway
 USER app
-EXPOSE 8080
+EXPOSE 18080
 CMD ["gateway"]

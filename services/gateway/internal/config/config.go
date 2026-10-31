@@ -12,7 +12,7 @@ type Config struct {
 }
 
 func Load() (Config, error) {
-	c := Config{HTTPPort: env("GATEWAY_HTTP_PORT", "8080"), GRPCPort: env("GATEWAY_GRPC_PORT", "50051")}
+	c := Config{HTTPPort: env("GATEWAY_HTTP_PORT", "18080"), GRPCPort: env("GATEWAY_GRPC_PORT", "50051")}
 	for name, value := range map[string]string{"HTTP port": c.HTTPPort, "gRPC port": c.GRPCPort} {
 		port, err := strconv.Atoi(value)
 		if err != nil || port < 1 || port > 65535 {
