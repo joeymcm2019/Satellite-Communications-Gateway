@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+package satellite.v1;
+option go_package = "github.com/satellite-communications/gateway/gen/satellite/v1;satellitev1";
+
+import "google/protobuf/timestamp.proto";
+
+message SatelliteIdentity {
+  string satellite_id = 1;
+  string name = 2;
+}
+
+enum ConnectionStatus {
+  CONNECTION_STATUS_UNSPECIFIED = 0;
+  CONNECTION_STATUS_CONNECTED = 1;
+  CONNECTION_STATUS_DISCONNECTED = 2;
+}
+
+message Telemetry {
+  SatelliteIdentity satellite = 1;
+  google.protobuf.Timestamp observed_at = 2;
+  double battery_percent = 3;
+  ConnectionStatus connection_status = 4;
+}
+
+message Command {
+  string command_id = 1;
+  string satellite_id = 2;
+  string action = 3;
+}
+
+message CommandAcknowledgment {
+  string command_id = 1;
+  string satellite_id = 2;
+  bool accepted = 3;
+  string detail = 4;
+}
+
+message TelemetryReceipt { bool accepted = 1; }
+
+// Contract placeholder only; no client or server is implemented.
+service SatelliteGateway {
+  rpc SendTelemetry(Telemetry) returns (TelemetryReceipt);
+}
