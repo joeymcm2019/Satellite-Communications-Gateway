@@ -1,6 +1,7 @@
 import logging
 import random
 import time
+from datetime import timedelta
 from threading import Event
 
 import grpc
@@ -27,10 +28,10 @@ class SimulatorService:
 
         if satellite.battery_percent < 10 and not satellite.charging:
             satellite.charging = True
-            logger.info("Satellite %s is now charging", satellite.satellite_id)
+            logger.info("Satellite %s is now charging", satellite.config.satellite_id)
         elif satellite.battery_percent == 100 and satellite.charging:
             satellite.charging = False
-            logger.info("Satellite %s is fully charged", satellite.satellite_id)
+            logger.info("Satellite %s is fully charged", satellite.config.satellite_id)
 
         battery_change = random.uniform(0.1, 0.3) * (-1 if not satellite.charging else 1)
         new_battery_percent = satellite.battery_percent + battery_change
@@ -38,13 +39,16 @@ class SimulatorService:
 
         return satellite_pb2.SendTelemetryRequest(
             satellite=satellite_pb2.SatelliteIdentity(
-                satellite_id=satellite.satellite_id,
-                name=satellite.name,
+                satellite_id=satellite.config.satellite_id,
+                name=satellite.config.name,
             ),
             observed_at=observed_at,
             battery_percent=satellite.battery_percent,
             connection_status=satellite_pb2.CONNECTION_STATUS_CONNECTED,
             sequence_number=satellite.sequence_number,
+            expected_interval_seconds=timedelta(
+                seconds=satellite.config.telemetry_interval_seconds
+            ),
         )
 
     def connect_to_gateway(self) -> None:
@@ -55,14 +59,14 @@ class SimulatorService:
             satellite.outage_ticks_remaining -= 1
             if satellite.outage_ticks_remaining <= 0:
                 satellite.communication_outage = False
-                logger.info("Satellite %s communication restored", satellite.satellite_id)
+                logger.info("Satellite %s communication restored", satellite.config.satellite_id)
         else:
             if random.random() < 0.05:
                 satellite.communication_outage = True
                 satellite.outage_ticks_remaining = random.randint(1, 5)
                 logger.warning(
                     "Satellite %s communication outage for %d ticks",
-                    satellite.satellite_id,
+                    satellite.config.satellite_id,
                     satellite.outage_ticks_remaining,
                 )
 
@@ -94,10 +98,11 @@ class SimulatorService:
 
                 if satellite.communication_outage:
                     logger.warning(
-                        "Satellite %s is in communication outage, skipping telemetry",
+                        "Satellite %s is in communication outage, skipping telemetry %d",
                         satellite_id,
                         telemetry.sequence_number,
                     )
+
                 else:
                     try:
                         accepted = self.client.send_telemetry(telemetry)

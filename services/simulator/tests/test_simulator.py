@@ -11,7 +11,7 @@ class SimulatorTests(unittest.TestCase):
     def test_defaults_and_placeholders(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
             service = SimulatorService(Config.from_env())
-        self.assertEqual(service.satellite.satellite_id, "SAT-001")
+        self.assertEqual(service.satellite.config.satellite_id, "SAT-001")
         self.assertIsNone(service.generate_telemetry())
         self.assertIsNone(service.connect_to_gateway())
         self.assertIsNone(service.simulate_outage())

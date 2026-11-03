@@ -28,7 +28,7 @@ def main() -> None:
     service = SimulatorService(config, client, satellites)
 
     if args.once:
-        logging.info("Configuration valid for %s", service.satellite.satellite_id)
+        logging.info("Configuration valid for %s", service.satellite.config.satellite_id)
         return
     stop = Event()
     for sig in (signal.SIGINT, signal.SIGTERM):
