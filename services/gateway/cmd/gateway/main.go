@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net"
 	"net/http"
@@ -43,7 +44,7 @@ func main() {
 
 	failures := make(chan error, 1)
 
-	grpcServer, err := startGRPCServer(cfg.GRPCPort)
+	grpcServer, err := startGRPCServer(cfg.GRPCPort, ctx)
 
 	if err != nil {
 		log.Fatal(err)
@@ -51,6 +52,7 @@ func main() {
 
 	go func() {
 		log.Printf("gateway HTTP listening on %s", httpServer.Addr)
+		fmt.Println()
 		failures <- httpServer.ListenAndServe()
 	}()
 
@@ -93,17 +95,20 @@ func main() {
 /*
 logs errors from Serve() rather than forwarding them to main error channel.
 */
-func startGRPCServer(port string) (*grpc.Server, error) {
+func startGRPCServer(port string, ctx context.Context) (*grpc.Server, error) {
 	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		return nil, err
 	}
 
 	grpcServer := grpc.NewServer()
+	gatewayServer := server.NewGatewayServer()
+
+	go gatewayServer.MonitorSatellites(ctx)
 
 	satellitev1.RegisterSatelliteGatewayServiceServer(
 		grpcServer,
-		server.NewGatewayServer(),
+		gatewayServer,
 	)
 
 	log.Println("gRPC server listening on port 50051")

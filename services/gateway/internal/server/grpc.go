@@ -30,3 +30,7 @@ func (s *GatewayServer) SendTelemetry(
 		Accepted: true,
 	}, nil
 }
+
+func (s *GatewayServer) MonitorSatellites(ctx context.Context) {
+	s.tracker.MonitorSatellites(ctx)
+}
