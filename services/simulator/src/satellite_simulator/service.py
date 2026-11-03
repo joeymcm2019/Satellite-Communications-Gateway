@@ -46,7 +46,7 @@ class SimulatorService:
             battery_percent=satellite.battery_percent,
             connection_status=satellite_pb2.CONNECTION_STATUS_CONNECTED,
             sequence_number=satellite.sequence_number,
-            expected_interval_seconds=timedelta(
+            expected_interval_seconds=timedelta(  ##Todo only want to send this once.
                 seconds=satellite.config.telemetry_interval_seconds
             ),
         )

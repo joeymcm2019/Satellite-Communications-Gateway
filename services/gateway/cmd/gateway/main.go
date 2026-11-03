@@ -103,7 +103,7 @@ func startGRPCServer(port string) (*grpc.Server, error) {
 
 	satellitev1.RegisterSatelliteGatewayServiceServer(
 		grpcServer,
-		&server.GatewayServer{},
+		server.NewGatewayServer(),
 	)
 
 	log.Println("gRPC server listening on port 50051")
