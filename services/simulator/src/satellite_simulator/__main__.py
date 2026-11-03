@@ -7,6 +7,7 @@ from threading import Event
 
 from satellite_simulator.client import GatewayClient
 from satellite_simulator.config import Config
+from satellite_simulator.satellite import Satellite, SatelliteConfig
 from satellite_simulator.service import SimulatorService
 
 
@@ -17,7 +18,15 @@ def main() -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     config = Config.from_env()
     client = GatewayClient(config.gateway_address)
-    service = SimulatorService(config, client)
+
+    satellites = [
+        Satellite(SatelliteConfig("SAT-001", "Demo Satellite 1", 5.0)),
+        Satellite(SatelliteConfig("SAT-002", "Demo Satellite 2", 10.0)),
+        Satellite(SatelliteConfig("SAT-003", "Demo Satellite 3", 15.0)),
+    ]
+
+    service = SimulatorService(config, client, satellites)
+
     if args.once:
         logging.info("Configuration valid for %s", service.satellite.satellite_id)
         return

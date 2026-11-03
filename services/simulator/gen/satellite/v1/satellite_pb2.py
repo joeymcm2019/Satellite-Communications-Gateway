@@ -9,6 +9,7 @@ from google.protobuf import descriptor_pool as _descriptor_pool
 from google.protobuf import runtime_version as _runtime_version
 from google.protobuf import symbol_database as _symbol_database
 from google.protobuf.internal import builder as _builder
+
 _runtime_version.ValidateProtobufRuntimeVersion(
     _runtime_version.Domain.PUBLIC,
     7,
@@ -24,7 +25,6 @@ _sym_db = _symbol_database.Default()
 
 from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
-
 
 DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csatellite/v1/satellite.proto\x12\x0csatellite.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"7\n\x11SatelliteIdentity\x12\x14\n\x0csatellite_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"\xa6\x02\n\x14SendTelemetryRequest\x12\x32\n\tsatellite\x18\x01 \x01(\x0b\x32\x1f.satellite.v1.SatelliteIdentity\x12/\n\x0bobserved_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x17\n\x0f\x62\x61ttery_percent\x18\x03 \x01(\x01\x12\x39\n\x11\x63onnection_status\x18\x04 \x01(\x0e\x32\x1e.satellite.v1.ConnectionStatus\x12\x17\n\x0fsequence_number\x18\x05 \x01(\x04\x12<\n\x19\x65xpected_interval_seconds\x18\x06 \x01(\x0b\x32\x19.google.protobuf.Duration\"C\n\x07\x43ommand\x12\x12\n\ncommand_id\x18\x01 \x01(\t\x12\x14\n\x0csatellite_id\x18\x02 \x01(\t\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\"c\n\x15\x43ommandAcknowledgment\x12\x12\n\ncommand_id\x18\x01 \x01(\t\x12\x14\n\x0csatellite_id\x18\x02 \x01(\t\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x03 \x01(\x08\x12\x0e\n\x06\x64\x65tail\x18\x04 \x01(\t\"M\n\x10TelemetryReceipt\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x01 \x01(\x08\x12\x0e\n\x06\x64\x65tail\x18\x02 \x01(\t\x12\x17\n\x0fsequence_number\x18\x03 \x01(\x04*z\n\x10\x43onnectionStatus\x12!\n\x1d\x43ONNECTION_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n\x1b\x43ONNECTION_STATUS_CONNECTED\x10\x01\x12\"\n\x1e\x43ONNECTION_STATUS_DISCONNECTED\x10\x02\x32n\n\x17SatelliteGatewayService\x12S\n\rSendTelemetry\x12\".satellite.v1.SendTelemetryRequest\x1a\x1e.satellite.v1.TelemetryReceiptBJZHgithub.com/satellite-communications/gateway/gen/satellite/v1;satellitev1b\x06proto3')
 

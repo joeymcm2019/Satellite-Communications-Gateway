@@ -8,7 +8,6 @@ from typing import Self
 
 @dataclass(frozen=True)
 class Config:
-    satellite_id: str = "SAT-001"
     gateway_address: str = "localhost:50051"
     interval_seconds: float = 5.0
 
