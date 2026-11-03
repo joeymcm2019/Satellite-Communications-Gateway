@@ -43,13 +43,14 @@ func main() {
 
 	failures := make(chan error, 1)
 
-	grpcServer, err := startGRPCServer()
+	grpcServer, err := startGRPCServer(cfg.GRPCPort)
+
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	go func() {
-		log.Printf("gateway HTTP listening on %s; gRPC and WebSocket are planned", httpServer.Addr)
+		log.Printf("gateway HTTP listening on %s", httpServer.Addr)
 		failures <- httpServer.ListenAndServe()
 	}()
 
@@ -92,8 +93,8 @@ func main() {
 /*
 logs errors from Serve() rather than forwarding them to main error channel.
 */
-func startGRPCServer() (*grpc.Server, error) {
-	listener, err := net.Listen("tcp", ":50051")
+func startGRPCServer(port string) (*grpc.Server, error) {
+	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		return nil, err
 	}

@@ -3,6 +3,7 @@
 import math
 import os
 from dataclasses import dataclass
+from typing import Self
 
 
 @dataclass(frozen=True)
@@ -12,8 +13,13 @@ class Config:
     interval_seconds: float = 5.0
 
     @classmethod
-    def from_env(cls) -> "Config":
-        interval = float(os.getenv("SIMULATOR_INTERVAL_SECONDS", "5"))
+    def from_env(cls) -> Self:
+        interval = float(
+            os.getenv(
+                "SIMULATOR_INTERVAL_SECONDS",
+                "5",
+            )
+        )
         if not math.isfinite(interval) or interval <= 0:
             raise ValueError("SIMULATOR_INTERVAL_SECONDS must be finite and positive")
         satellite_id = os.getenv("SATELLITE_ID", "SAT-001").strip()

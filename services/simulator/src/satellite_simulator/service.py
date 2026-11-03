@@ -30,7 +30,7 @@ class SimulatorService:
         """Placeholder: future simulated communication outage."""
 
     def run(self, stop: Event) -> None:
-        logger.info("Simulator ready for %s; gRPC is not implemented", self.satellite.satellite_id)
+        logger.info("Simulator ready for %s", self.satellite.satellite_id)
         while not stop.wait(self.config.interval_seconds):
             logger.debug("Simulator idle; telemetry generation is planned")
         logger.info("Simulator stopped")
