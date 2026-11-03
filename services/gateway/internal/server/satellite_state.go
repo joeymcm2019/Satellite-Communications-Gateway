@@ -178,7 +178,10 @@ func (s *SatelliteTrackers) checkInactiveSatellites() {
 	defer s.mu.Unlock()
 
 	for id, sat := range s.satellites {
-		cyclesMissed := uint64(math.Round(time.Since(sat.lastReceivedAt).Seconds() / sat.expectedInterval.Seconds()))
+		if sat.expectedInterval.Seconds() == 0 {
+			return
+		}
+		cyclesMissed := int(math.Round(time.Since(sat.lastReceivedAt).Seconds() / sat.expectedInterval.Seconds()))
 		if cyclesMissed >= 3 {
 			fmt.Printf(
 				"Satellite %s is inactive and has missed %d cycles.\n",
