@@ -22,10 +22,11 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import duration_pb2 as google_dot_protobuf_dot_duration__pb2
 from google.protobuf import timestamp_pb2 as google_dot_protobuf_dot_timestamp__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csatellite/v1/satellite.proto\x12\x0csatellite.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"7\n\x11SatelliteIdentity\x12\x14\n\x0csatellite_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"\xe8\x01\n\x14SendTelemetryRequest\x12\x32\n\tsatellite\x18\x01 \x01(\x0b\x32\x1f.satellite.v1.SatelliteIdentity\x12/\n\x0bobserved_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x17\n\x0f\x62\x61ttery_percent\x18\x03 \x01(\x01\x12\x39\n\x11\x63onnection_status\x18\x04 \x01(\x0e\x32\x1e.satellite.v1.ConnectionStatus\x12\x17\n\x0fsequence_number\x18\x05 \x01(\x04\"C\n\x07\x43ommand\x12\x12\n\ncommand_id\x18\x01 \x01(\t\x12\x14\n\x0csatellite_id\x18\x02 \x01(\t\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\"c\n\x15\x43ommandAcknowledgment\x12\x12\n\ncommand_id\x18\x01 \x01(\t\x12\x14\n\x0csatellite_id\x18\x02 \x01(\t\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x03 \x01(\x08\x12\x0e\n\x06\x64\x65tail\x18\x04 \x01(\t\"M\n\x10TelemetryReceipt\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x01 \x01(\x08\x12\x0e\n\x06\x64\x65tail\x18\x02 \x01(\t\x12\x17\n\x0fsequence_number\x18\x03 \x01(\x04*z\n\x10\x43onnectionStatus\x12!\n\x1d\x43ONNECTION_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n\x1b\x43ONNECTION_STATUS_CONNECTED\x10\x01\x12\"\n\x1e\x43ONNECTION_STATUS_DISCONNECTED\x10\x02\x32n\n\x17SatelliteGatewayService\x12S\n\rSendTelemetry\x12\".satellite.v1.SendTelemetryRequest\x1a\x1e.satellite.v1.TelemetryReceiptBJZHgithub.com/satellite-communications/gateway/gen/satellite/v1;satellitev1b\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x1csatellite/v1/satellite.proto\x12\x0csatellite.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"7\n\x11SatelliteIdentity\x12\x14\n\x0csatellite_id\x18\x01 \x01(\t\x12\x0c\n\x04name\x18\x02 \x01(\t\"\xa6\x02\n\x14SendTelemetryRequest\x12\x32\n\tsatellite\x18\x01 \x01(\x0b\x32\x1f.satellite.v1.SatelliteIdentity\x12/\n\x0bobserved_at\x18\x02 \x01(\x0b\x32\x1a.google.protobuf.Timestamp\x12\x17\n\x0f\x62\x61ttery_percent\x18\x03 \x01(\x01\x12\x39\n\x11\x63onnection_status\x18\x04 \x01(\x0e\x32\x1e.satellite.v1.ConnectionStatus\x12\x17\n\x0fsequence_number\x18\x05 \x01(\x04\x12<\n\x19\x65xpected_interval_seconds\x18\x06 \x01(\x0b\x32\x19.google.protobuf.Duration\"C\n\x07\x43ommand\x12\x12\n\ncommand_id\x18\x01 \x01(\t\x12\x14\n\x0csatellite_id\x18\x02 \x01(\t\x12\x0e\n\x06\x61\x63tion\x18\x03 \x01(\t\"c\n\x15\x43ommandAcknowledgment\x12\x12\n\ncommand_id\x18\x01 \x01(\t\x12\x14\n\x0csatellite_id\x18\x02 \x01(\t\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x03 \x01(\x08\x12\x0e\n\x06\x64\x65tail\x18\x04 \x01(\t\"M\n\x10TelemetryReceipt\x12\x10\n\x08\x61\x63\x63\x65pted\x18\x01 \x01(\x08\x12\x0e\n\x06\x64\x65tail\x18\x02 \x01(\t\x12\x17\n\x0fsequence_number\x18\x03 \x01(\x04*z\n\x10\x43onnectionStatus\x12!\n\x1d\x43ONNECTION_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n\x1b\x43ONNECTION_STATUS_CONNECTED\x10\x01\x12\"\n\x1e\x43ONNECTION_STATUS_DISCONNECTED\x10\x02\x32n\n\x17SatelliteGatewayService\x12S\n\rSendTelemetry\x12\".satellite.v1.SendTelemetryRequest\x1a\x1e.satellite.v1.TelemetryReceiptBJZHgithub.com/satellite-communications/gateway/gen/satellite/v1;satellitev1b\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -33,18 +34,18 @@ _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'satellite.v1.satellite_pb2'
 if not _descriptor._USE_C_DESCRIPTORS:
   _globals['DESCRIPTOR']._loaded_options = None
   _globals['DESCRIPTOR']._serialized_options = b'ZHgithub.com/satellite-communications/gateway/gen/satellite/v1;satellitev1'
-  _globals['_CONNECTIONSTATUS']._serialized_start=620
-  _globals['_CONNECTIONSTATUS']._serialized_end=742
-  _globals['_SATELLITEIDENTITY']._serialized_start=79
-  _globals['_SATELLITEIDENTITY']._serialized_end=134
-  _globals['_SENDTELEMETRYREQUEST']._serialized_start=137
-  _globals['_SENDTELEMETRYREQUEST']._serialized_end=369
-  _globals['_COMMAND']._serialized_start=371
-  _globals['_COMMAND']._serialized_end=438
-  _globals['_COMMANDACKNOWLEDGMENT']._serialized_start=440
-  _globals['_COMMANDACKNOWLEDGMENT']._serialized_end=539
-  _globals['_TELEMETRYRECEIPT']._serialized_start=541
-  _globals['_TELEMETRYRECEIPT']._serialized_end=618
-  _globals['_SATELLITEGATEWAYSERVICE']._serialized_start=744
-  _globals['_SATELLITEGATEWAYSERVICE']._serialized_end=854
+  _globals['_CONNECTIONSTATUS']._serialized_start=714
+  _globals['_CONNECTIONSTATUS']._serialized_end=836
+  _globals['_SATELLITEIDENTITY']._serialized_start=111
+  _globals['_SATELLITEIDENTITY']._serialized_end=166
+  _globals['_SENDTELEMETRYREQUEST']._serialized_start=169
+  _globals['_SENDTELEMETRYREQUEST']._serialized_end=463
+  _globals['_COMMAND']._serialized_start=465
+  _globals['_COMMAND']._serialized_end=532
+  _globals['_COMMANDACKNOWLEDGMENT']._serialized_start=534
+  _globals['_COMMANDACKNOWLEDGMENT']._serialized_end=633
+  _globals['_TELEMETRYRECEIPT']._serialized_start=635
+  _globals['_TELEMETRYRECEIPT']._serialized_end=712
+  _globals['_SATELLITEGATEWAYSERVICE']._serialized_start=838
+  _globals['_SATELLITEGATEWAYSERVICE']._serialized_end=948
 # @@protoc_insertion_point(module_scope)

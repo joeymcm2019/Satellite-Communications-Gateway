@@ -9,6 +9,7 @@ package satellitev1
 import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 	reflect "reflect"
 	sync "sync"
@@ -124,14 +125,15 @@ func (x *SatelliteIdentity) GetName() string {
 }
 
 type SendTelemetryRequest struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Satellite        *SatelliteIdentity     `protobuf:"bytes,1,opt,name=satellite,proto3" json:"satellite,omitempty"`
-	ObservedAt       *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=observed_at,json=observedAt,proto3" json:"observed_at,omitempty"`
-	BatteryPercent   float64                `protobuf:"fixed64,3,opt,name=battery_percent,json=batteryPercent,proto3" json:"battery_percent,omitempty"`
-	ConnectionStatus ConnectionStatus       `protobuf:"varint,4,opt,name=connection_status,json=connectionStatus,proto3,enum=satellite.v1.ConnectionStatus" json:"connection_status,omitempty"`
-	SequenceNumber   uint64                 `protobuf:"varint,5,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state                   protoimpl.MessageState `protogen:"open.v1"`
+	Satellite               *SatelliteIdentity     `protobuf:"bytes,1,opt,name=satellite,proto3" json:"satellite,omitempty"`
+	ObservedAt              *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=observed_at,json=observedAt,proto3" json:"observed_at,omitempty"`
+	BatteryPercent          float64                `protobuf:"fixed64,3,opt,name=battery_percent,json=batteryPercent,proto3" json:"battery_percent,omitempty"`
+	ConnectionStatus        ConnectionStatus       `protobuf:"varint,4,opt,name=connection_status,json=connectionStatus,proto3,enum=satellite.v1.ConnectionStatus" json:"connection_status,omitempty"`
+	SequenceNumber          uint64                 `protobuf:"varint,5,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
+	ExpectedIntervalSeconds *durationpb.Duration   `protobuf:"bytes,6,opt,name=expected_interval_seconds,json=expectedIntervalSeconds,proto3" json:"expected_interval_seconds,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *SendTelemetryRequest) Reset() {
@@ -197,6 +199,13 @@ func (x *SendTelemetryRequest) GetSequenceNumber() uint64 {
 		return x.SequenceNumber
 	}
 	return 0
+}
+
+func (x *SendTelemetryRequest) GetExpectedIntervalSeconds() *durationpb.Duration {
+	if x != nil {
+		return x.ExpectedIntervalSeconds
+	}
+	return nil
 }
 
 type Command struct {
@@ -391,17 +400,18 @@ var File_satellite_v1_satellite_proto protoreflect.FileDescriptor
 
 const file_satellite_v1_satellite_proto_rawDesc = "" +
 	"\n" +
-	"\x1csatellite/v1/satellite.proto\x12\fsatellite.v1\x1a\x1fgoogle/protobuf/timestamp.proto\"J\n" +
+	"\x1csatellite/v1/satellite.proto\x12\fsatellite.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"J\n" +
 	"\x11SatelliteIdentity\x12!\n" +
 	"\fsatellite_id\x18\x01 \x01(\tR\vsatelliteId\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\xb1\x02\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\x88\x03\n" +
 	"\x14SendTelemetryRequest\x12=\n" +
 	"\tsatellite\x18\x01 \x01(\v2\x1f.satellite.v1.SatelliteIdentityR\tsatellite\x12;\n" +
 	"\vobserved_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"observedAt\x12'\n" +
 	"\x0fbattery_percent\x18\x03 \x01(\x01R\x0ebatteryPercent\x12K\n" +
 	"\x11connection_status\x18\x04 \x01(\x0e2\x1e.satellite.v1.ConnectionStatusR\x10connectionStatus\x12'\n" +
-	"\x0fsequence_number\x18\x05 \x01(\x04R\x0esequenceNumber\"c\n" +
+	"\x0fsequence_number\x18\x05 \x01(\x04R\x0esequenceNumber\x12U\n" +
+	"\x19expected_interval_seconds\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\x17expectedIntervalSeconds\"c\n" +
 	"\aCommand\x12\x1d\n" +
 	"\n" +
 	"command_id\x18\x01 \x01(\tR\tcommandId\x12!\n" +
@@ -446,18 +456,20 @@ var file_satellite_v1_satellite_proto_goTypes = []any{
 	(*CommandAcknowledgment)(nil), // 4: satellite.v1.CommandAcknowledgment
 	(*TelemetryReceipt)(nil),      // 5: satellite.v1.TelemetryReceipt
 	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),   // 7: google.protobuf.Duration
 }
 var file_satellite_v1_satellite_proto_depIdxs = []int32{
 	1, // 0: satellite.v1.SendTelemetryRequest.satellite:type_name -> satellite.v1.SatelliteIdentity
 	6, // 1: satellite.v1.SendTelemetryRequest.observed_at:type_name -> google.protobuf.Timestamp
 	0, // 2: satellite.v1.SendTelemetryRequest.connection_status:type_name -> satellite.v1.ConnectionStatus
-	2, // 3: satellite.v1.SatelliteGatewayService.SendTelemetry:input_type -> satellite.v1.SendTelemetryRequest
-	5, // 4: satellite.v1.SatelliteGatewayService.SendTelemetry:output_type -> satellite.v1.TelemetryReceipt
-	4, // [4:5] is the sub-list for method output_type
-	3, // [3:4] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	7, // 3: satellite.v1.SendTelemetryRequest.expected_interval_seconds:type_name -> google.protobuf.Duration
+	2, // 4: satellite.v1.SatelliteGatewayService.SendTelemetry:input_type -> satellite.v1.SendTelemetryRequest
+	5, // 5: satellite.v1.SatelliteGatewayService.SendTelemetry:output_type -> satellite.v1.TelemetryReceipt
+	5, // [5:6] is the sub-list for method output_type
+	4, // [4:5] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_satellite_v1_satellite_proto_init() }
