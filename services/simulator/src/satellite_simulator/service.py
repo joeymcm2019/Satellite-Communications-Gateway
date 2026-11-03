@@ -61,7 +61,7 @@ class SimulatorService:
                 satellite.communication_outage = False
                 logger.info("Satellite %s communication restored", satellite.config.satellite_id)
         else:
-            if random.random() < 0.05:
+            if random.random() < 0.08:
                 satellite.communication_outage = True
                 satellite.outage_ticks_remaining = random.randint(1, 5)
                 logger.warning(
