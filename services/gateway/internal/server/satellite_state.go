@@ -18,15 +18,17 @@ type SatelliteState struct {
 }
 
 type SatelliteTrackers struct {
-	mu              sync.Mutex
-	satellites      map[string]SatelliteState
-	intervalChanged chan struct{}
+	mu                 sync.Mutex
+	satellites         map[string]SatelliteState
+	intervalChanged    chan struct{}
+	diagnosticRequests chan string
 }
 
 func NewSatelliteTracker() *SatelliteTrackers {
 	return &SatelliteTrackers{
-		satellites:      make(map[string]SatelliteState),
-		intervalChanged: make(chan struct{}, 1),
+		satellites:         make(map[string]SatelliteState),
+		intervalChanged:    make(chan struct{}, 1),
+		diagnosticRequests: make(chan string, 100),
 	}
 }
 
@@ -175,7 +177,8 @@ func (s *SatelliteTrackers) MonitorSatellites(ctx context.Context) {
 
 func (s *SatelliteTrackers) checkInactiveSatellites() {
 	s.mu.Lock()
-	defer s.mu.Unlock()
+
+	var inactiveSatellites []string
 
 	for id, sat := range s.satellites {
 		if sat.expectedInterval.Seconds() == 0 {
@@ -189,6 +192,12 @@ func (s *SatelliteTrackers) checkInactiveSatellites() {
 				cyclesMissed,
 			)
 			fmt.Println()
+			inactiveSatellites = append(inactiveSatellites, id)
 		}
+	}
+
+	s.mu.Unlock()
+	for _, id := range inactiveSatellites {
+		s.diagnosticRequests <- id
 	}
 }
