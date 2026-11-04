@@ -105,6 +105,7 @@ func startGRPCServer(port string, ctx context.Context) (*grpc.Server, error) {
 	gatewayServer := server.NewGatewayServer()
 
 	go gatewayServer.MonitorSatellites(ctx)
+	go gatewayServer.MonitorCommunications(ctx)
 
 	satellitev1.RegisterSatelliteGatewayServiceServer(
 		grpcServer,

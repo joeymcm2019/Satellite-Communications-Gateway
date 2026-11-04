@@ -12,12 +12,20 @@ import (
 type GatewayServer struct {
 	satellitev1.UnimplementedSatelliteGatewayServiceServer
 
-	tracker *SatelliteTrackers
+	communications *CommunicationManager
+	tracker        *SatelliteTrackers
 }
 
 func NewGatewayServer() *GatewayServer {
+	tracker := NewSatelliteTracker()
+
+	manager := NewCommunicationManager(
+		tracker.diagnosticRequests,
+	)
+
 	return &GatewayServer{
-		tracker: NewSatelliteTracker(),
+		tracker:        tracker,
+		communications: manager,
 	}
 }
 
@@ -38,13 +46,16 @@ func (s *GatewayServer) MonitorSatellites(ctx context.Context) {
 	s.tracker.MonitorSatellites(ctx)
 }
 
+func (s *GatewayServer) MonitorCommunications(ctx context.Context) {
+	s.communications.Run(ctx)
+}
+
 func (s *GatewayServer) Communicate(
 	stream grpc.BidiStreamingServer[
 		satellitev1.SatelliteMessage,
 		satellitev1.GatewayMessage,
 	],
 ) error {
-
 	for {
 		message, err := stream.Recv()
 
