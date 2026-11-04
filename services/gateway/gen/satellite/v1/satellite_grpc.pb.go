@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	SatelliteGatewayService_SendTelemetry_FullMethodName = "/satellite.v1.SatelliteGatewayService/SendTelemetry"
+	SatelliteGatewayService_Communicate_FullMethodName   = "/satellite.v1.SatelliteGatewayService/Communicate"
 )
 
 // SatelliteGatewayServiceClient is the client API for SatelliteGatewayService service.
@@ -29,6 +30,7 @@ const (
 // Contract placeholder only; no client or server is implemented.
 type SatelliteGatewayServiceClient interface {
 	SendTelemetry(ctx context.Context, in *SendTelemetryRequest, opts ...grpc.CallOption) (*TelemetryReceipt, error)
+	Communicate(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[SatelliteMessage, GatewayMessage], error)
 }
 
 type satelliteGatewayServiceClient struct {
@@ -49,6 +51,19 @@ func (c *satelliteGatewayServiceClient) SendTelemetry(ctx context.Context, in *S
 	return out, nil
 }
 
+func (c *satelliteGatewayServiceClient) Communicate(ctx context.Context, opts ...grpc.CallOption) (grpc.BidiStreamingClient[SatelliteMessage, GatewayMessage], error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	stream, err := c.cc.NewStream(ctx, &SatelliteGatewayService_ServiceDesc.Streams[0], SatelliteGatewayService_Communicate_FullMethodName, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	x := &grpc.GenericClientStream[SatelliteMessage, GatewayMessage]{ClientStream: stream}
+	return x, nil
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type SatelliteGatewayService_CommunicateClient = grpc.BidiStreamingClient[SatelliteMessage, GatewayMessage]
+
 // SatelliteGatewayServiceServer is the server API for SatelliteGatewayService service.
 // All implementations must embed UnimplementedSatelliteGatewayServiceServer
 // for forward compatibility.
@@ -56,6 +71,7 @@ func (c *satelliteGatewayServiceClient) SendTelemetry(ctx context.Context, in *S
 // Contract placeholder only; no client or server is implemented.
 type SatelliteGatewayServiceServer interface {
 	SendTelemetry(context.Context, *SendTelemetryRequest) (*TelemetryReceipt, error)
+	Communicate(grpc.BidiStreamingServer[SatelliteMessage, GatewayMessage]) error
 	mustEmbedUnimplementedSatelliteGatewayServiceServer()
 }
 
@@ -68,6 +84,9 @@ type UnimplementedSatelliteGatewayServiceServer struct{}
 
 func (UnimplementedSatelliteGatewayServiceServer) SendTelemetry(context.Context, *SendTelemetryRequest) (*TelemetryReceipt, error) {
 	return nil, status.Error(codes.Unimplemented, "method SendTelemetry not implemented")
+}
+func (UnimplementedSatelliteGatewayServiceServer) Communicate(grpc.BidiStreamingServer[SatelliteMessage, GatewayMessage]) error {
+	return status.Error(codes.Unimplemented, "method Communicate not implemented")
 }
 func (UnimplementedSatelliteGatewayServiceServer) mustEmbedUnimplementedSatelliteGatewayServiceServer() {
 }
@@ -109,6 +128,13 @@ func _SatelliteGatewayService_SendTelemetry_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _SatelliteGatewayService_Communicate_Handler(srv interface{}, stream grpc.ServerStream) error {
+	return srv.(SatelliteGatewayServiceServer).Communicate(&grpc.GenericServerStream[SatelliteMessage, GatewayMessage]{ServerStream: stream})
+}
+
+// This type alias is provided for backwards compatibility with existing code that references the prior non-generic stream type by name.
+type SatelliteGatewayService_CommunicateServer = grpc.BidiStreamingServer[SatelliteMessage, GatewayMessage]
+
 // SatelliteGatewayService_ServiceDesc is the grpc.ServiceDesc for SatelliteGatewayService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -121,6 +147,13 @@ var SatelliteGatewayService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _SatelliteGatewayService_SendTelemetry_Handler,
 		},
 	},
-	Streams:  []grpc.StreamDesc{},
+	Streams: []grpc.StreamDesc{
+		{
+			StreamName:    "Communicate",
+			Handler:       _SatelliteGatewayService_Communicate_Handler,
+			ServerStreams: true,
+			ClientStreams: true,
+		},
+	},
 	Metadata: "satellite/v1/satellite.proto",
 }

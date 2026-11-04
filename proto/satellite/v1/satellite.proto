@@ -46,7 +46,31 @@ message TelemetryReceipt {
   uint64 sequence_number = 3;
 }
 
+message PingRequest {
+  string satellite_id = 1;
+}
+
+message PingResponse {
+  string satellite_id = 1;
+  bool healthy = 2;
+}
+
+message SatelliteMessage {
+  oneof payload {
+    PingResponse ping_response = 1;
+    CommandAcknowledgment command_acknowledgement = 2;
+  }
+}
+
+message GatewayMessage {
+  oneof payload {
+    PingRequest ping = 1;
+    Command command = 2;
+  }
+}
+
 // Contract placeholder only; no client or server is implemented.
 service SatelliteGatewayService {
   rpc SendTelemetry(SendTelemetryRequest) returns (TelemetryReceipt);
+  rpc Communicate(stream SatelliteMessage) returns (stream GatewayMessage);
 }

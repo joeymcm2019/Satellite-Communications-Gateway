@@ -396,6 +396,266 @@ func (x *TelemetryReceipt) GetSequenceNumber() uint64 {
 	return 0
 }
 
+type PingRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SatelliteId   string                 `protobuf:"bytes,1,opt,name=satellite_id,json=satelliteId,proto3" json:"satellite_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PingRequest) Reset() {
+	*x = PingRequest{}
+	mi := &file_satellite_v1_satellite_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PingRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PingRequest) ProtoMessage() {}
+
+func (x *PingRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_satellite_v1_satellite_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PingRequest.ProtoReflect.Descriptor instead.
+func (*PingRequest) Descriptor() ([]byte, []int) {
+	return file_satellite_v1_satellite_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *PingRequest) GetSatelliteId() string {
+	if x != nil {
+		return x.SatelliteId
+	}
+	return ""
+}
+
+type PingResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	SatelliteId   string                 `protobuf:"bytes,1,opt,name=satellite_id,json=satelliteId,proto3" json:"satellite_id,omitempty"`
+	Healthy       bool                   `protobuf:"varint,2,opt,name=healthy,proto3" json:"healthy,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *PingResponse) Reset() {
+	*x = PingResponse{}
+	mi := &file_satellite_v1_satellite_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PingResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PingResponse) ProtoMessage() {}
+
+func (x *PingResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_satellite_v1_satellite_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use PingResponse.ProtoReflect.Descriptor instead.
+func (*PingResponse) Descriptor() ([]byte, []int) {
+	return file_satellite_v1_satellite_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *PingResponse) GetSatelliteId() string {
+	if x != nil {
+		return x.SatelliteId
+	}
+	return ""
+}
+
+func (x *PingResponse) GetHealthy() bool {
+	if x != nil {
+		return x.Healthy
+	}
+	return false
+}
+
+type SatelliteMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Payload:
+	//
+	//	*SatelliteMessage_PingResponse
+	//	*SatelliteMessage_CommandAcknowledgement
+	Payload       isSatelliteMessage_Payload `protobuf_oneof:"payload"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SatelliteMessage) Reset() {
+	*x = SatelliteMessage{}
+	mi := &file_satellite_v1_satellite_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SatelliteMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SatelliteMessage) ProtoMessage() {}
+
+func (x *SatelliteMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_satellite_v1_satellite_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SatelliteMessage.ProtoReflect.Descriptor instead.
+func (*SatelliteMessage) Descriptor() ([]byte, []int) {
+	return file_satellite_v1_satellite_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *SatelliteMessage) GetPayload() isSatelliteMessage_Payload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+func (x *SatelliteMessage) GetPingResponse() *PingResponse {
+	if x != nil {
+		if x, ok := x.Payload.(*SatelliteMessage_PingResponse); ok {
+			return x.PingResponse
+		}
+	}
+	return nil
+}
+
+func (x *SatelliteMessage) GetCommandAcknowledgement() *CommandAcknowledgment {
+	if x != nil {
+		if x, ok := x.Payload.(*SatelliteMessage_CommandAcknowledgement); ok {
+			return x.CommandAcknowledgement
+		}
+	}
+	return nil
+}
+
+type isSatelliteMessage_Payload interface {
+	isSatelliteMessage_Payload()
+}
+
+type SatelliteMessage_PingResponse struct {
+	PingResponse *PingResponse `protobuf:"bytes,1,opt,name=ping_response,json=pingResponse,proto3,oneof"`
+}
+
+type SatelliteMessage_CommandAcknowledgement struct {
+	CommandAcknowledgement *CommandAcknowledgment `protobuf:"bytes,2,opt,name=command_acknowledgement,json=commandAcknowledgement,proto3,oneof"`
+}
+
+func (*SatelliteMessage_PingResponse) isSatelliteMessage_Payload() {}
+
+func (*SatelliteMessage_CommandAcknowledgement) isSatelliteMessage_Payload() {}
+
+type GatewayMessage struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Types that are valid to be assigned to Payload:
+	//
+	//	*GatewayMessage_Ping
+	//	*GatewayMessage_Command
+	Payload       isGatewayMessage_Payload `protobuf_oneof:"payload"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GatewayMessage) Reset() {
+	*x = GatewayMessage{}
+	mi := &file_satellite_v1_satellite_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GatewayMessage) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GatewayMessage) ProtoMessage() {}
+
+func (x *GatewayMessage) ProtoReflect() protoreflect.Message {
+	mi := &file_satellite_v1_satellite_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GatewayMessage.ProtoReflect.Descriptor instead.
+func (*GatewayMessage) Descriptor() ([]byte, []int) {
+	return file_satellite_v1_satellite_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GatewayMessage) GetPayload() isGatewayMessage_Payload {
+	if x != nil {
+		return x.Payload
+	}
+	return nil
+}
+
+func (x *GatewayMessage) GetPing() *PingRequest {
+	if x != nil {
+		if x, ok := x.Payload.(*GatewayMessage_Ping); ok {
+			return x.Ping
+		}
+	}
+	return nil
+}
+
+func (x *GatewayMessage) GetCommand() *Command {
+	if x != nil {
+		if x, ok := x.Payload.(*GatewayMessage_Command); ok {
+			return x.Command
+		}
+	}
+	return nil
+}
+
+type isGatewayMessage_Payload interface {
+	isGatewayMessage_Payload()
+}
+
+type GatewayMessage_Ping struct {
+	Ping *PingRequest `protobuf:"bytes,1,opt,name=ping,proto3,oneof"`
+}
+
+type GatewayMessage_Command struct {
+	Command *Command `protobuf:"bytes,2,opt,name=command,proto3,oneof"`
+}
+
+func (*GatewayMessage_Ping) isGatewayMessage_Payload() {}
+
+func (*GatewayMessage_Command) isGatewayMessage_Payload() {}
+
 var File_satellite_v1_satellite_proto protoreflect.FileDescriptor
 
 const file_satellite_v1_satellite_proto_rawDesc = "" +
@@ -426,13 +686,27 @@ const file_satellite_v1_satellite_proto_rawDesc = "" +
 	"\x10TelemetryReceipt\x12\x1a\n" +
 	"\baccepted\x18\x01 \x01(\bR\baccepted\x12\x16\n" +
 	"\x06detail\x18\x02 \x01(\tR\x06detail\x12'\n" +
-	"\x0fsequence_number\x18\x03 \x01(\x04R\x0esequenceNumber*z\n" +
+	"\x0fsequence_number\x18\x03 \x01(\x04R\x0esequenceNumber\"0\n" +
+	"\vPingRequest\x12!\n" +
+	"\fsatellite_id\x18\x01 \x01(\tR\vsatelliteId\"K\n" +
+	"\fPingResponse\x12!\n" +
+	"\fsatellite_id\x18\x01 \x01(\tR\vsatelliteId\x12\x18\n" +
+	"\ahealthy\x18\x02 \x01(\bR\ahealthy\"\xc0\x01\n" +
+	"\x10SatelliteMessage\x12A\n" +
+	"\rping_response\x18\x01 \x01(\v2\x1a.satellite.v1.PingResponseH\x00R\fpingResponse\x12^\n" +
+	"\x17command_acknowledgement\x18\x02 \x01(\v2#.satellite.v1.CommandAcknowledgmentH\x00R\x16commandAcknowledgementB\t\n" +
+	"\apayload\"\x7f\n" +
+	"\x0eGatewayMessage\x12/\n" +
+	"\x04ping\x18\x01 \x01(\v2\x19.satellite.v1.PingRequestH\x00R\x04ping\x121\n" +
+	"\acommand\x18\x02 \x01(\v2\x15.satellite.v1.CommandH\x00R\acommandB\t\n" +
+	"\apayload*z\n" +
 	"\x10ConnectionStatus\x12!\n" +
 	"\x1dCONNECTION_STATUS_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bCONNECTION_STATUS_CONNECTED\x10\x01\x12\"\n" +
-	"\x1eCONNECTION_STATUS_DISCONNECTED\x10\x022n\n" +
+	"\x1eCONNECTION_STATUS_DISCONNECTED\x10\x022\xbf\x01\n" +
 	"\x17SatelliteGatewayService\x12S\n" +
-	"\rSendTelemetry\x12\".satellite.v1.SendTelemetryRequest\x1a\x1e.satellite.v1.TelemetryReceiptBJZHgithub.com/satellite-communications/gateway/gen/satellite/v1;satellitev1b\x06proto3"
+	"\rSendTelemetry\x12\".satellite.v1.SendTelemetryRequest\x1a\x1e.satellite.v1.TelemetryReceipt\x12O\n" +
+	"\vCommunicate\x12\x1e.satellite.v1.SatelliteMessage\x1a\x1c.satellite.v1.GatewayMessage(\x010\x01BJZHgithub.com/satellite-communications/gateway/gen/satellite/v1;satellitev1b\x06proto3"
 
 var (
 	file_satellite_v1_satellite_proto_rawDescOnce sync.Once
@@ -447,7 +721,7 @@ func file_satellite_v1_satellite_proto_rawDescGZIP() []byte {
 }
 
 var file_satellite_v1_satellite_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_satellite_v1_satellite_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_satellite_v1_satellite_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_satellite_v1_satellite_proto_goTypes = []any{
 	(ConnectionStatus)(0),         // 0: satellite.v1.ConnectionStatus
 	(*SatelliteIdentity)(nil),     // 1: satellite.v1.SatelliteIdentity
@@ -455,21 +729,31 @@ var file_satellite_v1_satellite_proto_goTypes = []any{
 	(*Command)(nil),               // 3: satellite.v1.Command
 	(*CommandAcknowledgment)(nil), // 4: satellite.v1.CommandAcknowledgment
 	(*TelemetryReceipt)(nil),      // 5: satellite.v1.TelemetryReceipt
-	(*timestamppb.Timestamp)(nil), // 6: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),   // 7: google.protobuf.Duration
+	(*PingRequest)(nil),           // 6: satellite.v1.PingRequest
+	(*PingResponse)(nil),          // 7: satellite.v1.PingResponse
+	(*SatelliteMessage)(nil),      // 8: satellite.v1.SatelliteMessage
+	(*GatewayMessage)(nil),        // 9: satellite.v1.GatewayMessage
+	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),   // 11: google.protobuf.Duration
 }
 var file_satellite_v1_satellite_proto_depIdxs = []int32{
-	1, // 0: satellite.v1.SendTelemetryRequest.satellite:type_name -> satellite.v1.SatelliteIdentity
-	6, // 1: satellite.v1.SendTelemetryRequest.observed_at:type_name -> google.protobuf.Timestamp
-	0, // 2: satellite.v1.SendTelemetryRequest.connection_status:type_name -> satellite.v1.ConnectionStatus
-	7, // 3: satellite.v1.SendTelemetryRequest.expected_interval_seconds:type_name -> google.protobuf.Duration
-	2, // 4: satellite.v1.SatelliteGatewayService.SendTelemetry:input_type -> satellite.v1.SendTelemetryRequest
-	5, // 5: satellite.v1.SatelliteGatewayService.SendTelemetry:output_type -> satellite.v1.TelemetryReceipt
-	5, // [5:6] is the sub-list for method output_type
-	4, // [4:5] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	1,  // 0: satellite.v1.SendTelemetryRequest.satellite:type_name -> satellite.v1.SatelliteIdentity
+	10, // 1: satellite.v1.SendTelemetryRequest.observed_at:type_name -> google.protobuf.Timestamp
+	0,  // 2: satellite.v1.SendTelemetryRequest.connection_status:type_name -> satellite.v1.ConnectionStatus
+	11, // 3: satellite.v1.SendTelemetryRequest.expected_interval_seconds:type_name -> google.protobuf.Duration
+	7,  // 4: satellite.v1.SatelliteMessage.ping_response:type_name -> satellite.v1.PingResponse
+	4,  // 5: satellite.v1.SatelliteMessage.command_acknowledgement:type_name -> satellite.v1.CommandAcknowledgment
+	6,  // 6: satellite.v1.GatewayMessage.ping:type_name -> satellite.v1.PingRequest
+	3,  // 7: satellite.v1.GatewayMessage.command:type_name -> satellite.v1.Command
+	2,  // 8: satellite.v1.SatelliteGatewayService.SendTelemetry:input_type -> satellite.v1.SendTelemetryRequest
+	8,  // 9: satellite.v1.SatelliteGatewayService.Communicate:input_type -> satellite.v1.SatelliteMessage
+	5,  // 10: satellite.v1.SatelliteGatewayService.SendTelemetry:output_type -> satellite.v1.TelemetryReceipt
+	9,  // 11: satellite.v1.SatelliteGatewayService.Communicate:output_type -> satellite.v1.GatewayMessage
+	10, // [10:12] is the sub-list for method output_type
+	8,  // [8:10] is the sub-list for method input_type
+	8,  // [8:8] is the sub-list for extension type_name
+	8,  // [8:8] is the sub-list for extension extendee
+	0,  // [0:8] is the sub-list for field type_name
 }
 
 func init() { file_satellite_v1_satellite_proto_init() }
@@ -477,13 +761,21 @@ func file_satellite_v1_satellite_proto_init() {
 	if File_satellite_v1_satellite_proto != nil {
 		return
 	}
+	file_satellite_v1_satellite_proto_msgTypes[7].OneofWrappers = []any{
+		(*SatelliteMessage_PingResponse)(nil),
+		(*SatelliteMessage_CommandAcknowledgement)(nil),
+	}
+	file_satellite_v1_satellite_proto_msgTypes[8].OneofWrappers = []any{
+		(*GatewayMessage_Ping)(nil),
+		(*GatewayMessage_Command)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_satellite_v1_satellite_proto_rawDesc), len(file_satellite_v1_satellite_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   5,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

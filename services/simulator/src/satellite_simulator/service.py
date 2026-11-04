@@ -63,7 +63,7 @@ class SimulatorService:
         else:
             if random.random() < 0.08:
                 satellite.communication_outage = True
-                satellite.outage_ticks_remaining = random.randint(1, 5)
+                satellite.outage_ticks_remaining = random.randint(1, 10)
                 logger.warning(
                     "Satellite %s communication outage for %d ticks",
                     satellite.config.satellite_id,
@@ -102,7 +102,6 @@ class SimulatorService:
                         satellite_id,
                         telemetry.sequence_number,
                     )
-
                 else:
                     try:
                         accepted = self.client.send_telemetry(telemetry)

@@ -21,8 +21,12 @@ def main() -> None:
 
     satellites = [
         Satellite(SatelliteConfig("SAT-001", "Demo Satellite 1", 5.0)),
-        Satellite(SatelliteConfig("SAT-002", "Demo Satellite 2", 10.0)),
-        Satellite(SatelliteConfig("SAT-003", "Demo Satellite 3", 15.0)),
+        Satellite(SatelliteConfig("SAT-002", "Demo Satellite 2", 6.0)),
+        Satellite(SatelliteConfig("SAT-003", "Demo Satellite 3", 7.0)),
+        Satellite(SatelliteConfig("SAT-004", "Demo Satellite 4", 8.0)),
+        Satellite(SatelliteConfig("SAT-005", "Demo Satellite 5", 9.0)),
+        Satellite(SatelliteConfig("SAT-006", "Demo Satellite 6", 11.0)),
+        Satellite(SatelliteConfig("SAT-007", "Demo Satellite 7", 13.0)),
     ]
 
     service = SimulatorService(config, client, satellites)
