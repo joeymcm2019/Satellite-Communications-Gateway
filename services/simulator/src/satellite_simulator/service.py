@@ -2,13 +2,14 @@ import logging
 import random
 import time
 from datetime import timedelta
-from threading import Event
+from threading import Event, Thread
 
 import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
 from satellite.v1 import satellite_pb2
 
 from satellite_simulator.client import GatewayClient
+from satellite_simulator.communications import CommunicationClient
 from satellite_simulator.config import Config
 from satellite_simulator.satellite import Satellite
 
@@ -20,6 +21,7 @@ class SimulatorService:
         self.config = config
         self.client = client
         self.satellites = satellites
+        self.communication_client = CommunicationClient(self.client)
 
     def generate_telemetry(self, satellite: Satellite) -> satellite_pb2.SendTelemetryRequest:
         satellite.sequence_number += 1
@@ -76,6 +78,14 @@ class SimulatorService:
             len(self.satellites),
         )
 
+        communication_thread = Thread(
+            target=self.communication_client.run,
+            args=(stop,),
+            daemon=True,
+        )
+
+        communication_thread.start()
+
         # track the next transmission time for each satellite
         next_transmissions = {
             satellite.config.satellite_id: (
@@ -129,4 +139,6 @@ class SimulatorService:
             else:
                 stop.wait()
 
+        # self.communication_client.close()
+        # communication_thread.join()
         logger.info("Simulator stopped")

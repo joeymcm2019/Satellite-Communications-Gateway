@@ -16,3 +16,6 @@ class GatewayClient:
 
     def close(self) -> None:
         self.channel.close()
+
+    def communicate(self, outgoing_messages):
+        return self.stub.Communicate(outgoing_messages)

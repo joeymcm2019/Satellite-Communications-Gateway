@@ -3,10 +3,20 @@ package server
 import (
 	"context"
 	"fmt"
+	"sync"
+
+	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
+	"google.golang.org/grpc"
 )
 
 type CommunicationManager struct {
 	diagnosticRequests <-chan string
+
+	mu     sync.Mutex
+	stream grpc.BidiStreamingServer[
+		satellitev1.SatelliteMessage,
+		satellitev1.GatewayMessage,
+	]
 }
 
 func NewCommunicationManager(
@@ -17,6 +27,18 @@ func NewCommunicationManager(
 	}
 }
 
+func (m *CommunicationManager) SetStream(
+	stream grpc.BidiStreamingServer[
+		satellitev1.SatelliteMessage,
+		satellitev1.GatewayMessage,
+	],
+) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	m.stream = stream
+}
+
 func (m *CommunicationManager) Run(ctx context.Context) {
 	for {
 		select {
@@ -25,11 +47,54 @@ func (m *CommunicationManager) Run(ctx context.Context) {
 				return
 			}
 
-			fmt.Println("Ping requested for:", satelliteID)
+			if err := m.sendPing(satelliteID); err != nil {
+				fmt.Printf(
+					"Failed to ping satellite %s: %v\n",
+					satelliteID,
+					err,
+				)
+				continue
+			}
+
+			fmt.Println("Ping sent to:", satelliteID)
 			fmt.Println()
 
 		case <-ctx.Done():
 			return
 		}
+	}
+}
+
+func (m *CommunicationManager) sendPing(satelliteID string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if m.stream == nil {
+		return fmt.Errorf("No active satellite communication stream.")
+	}
+
+	message := &satellitev1.GatewayMessage{
+		Payload: &satellitev1.GatewayMessage_Ping{
+			Ping: &satellitev1.PingRequest{
+				SatelliteId: satelliteID,
+			},
+		},
+	}
+
+	return m.stream.Send(message)
+}
+
+func (m *CommunicationManager) ClearStream(
+	stream grpc.BidiStreamingServer[
+		satellitev1.SatelliteMessage,
+		satellitev1.GatewayMessage,
+	],
+) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	//protect against race condition during reconnect
+	if m.stream == stream {
+		m.stream = nil
 	}
 }

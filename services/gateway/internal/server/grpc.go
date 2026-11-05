@@ -56,6 +56,8 @@ func (s *GatewayServer) Communicate(
 		satellitev1.GatewayMessage,
 	],
 ) error {
+	s.communications.SetStream(stream)
+	defer s.communications.ClearStream(stream)
 	for {
 		message, err := stream.Recv()
 
@@ -67,6 +69,20 @@ func (s *GatewayServer) Communicate(
 			return err
 		}
 
-		fmt.Println("Received satellite message:", message)
+		switch payload := message.Payload.(type) {
+		case *satellitev1.SatelliteMessage_PingResponse:
+			fmt.Printf(
+				"Ping response from %s: healthy=%t\n",
+				payload.PingResponse.SatelliteId,
+				payload.PingResponse.Healthy,
+			)
+		case *satellitev1.SatelliteMessage_CommandAcknowledgement:
+			fmt.Printf(
+				"Command acknowledged by %s\n",
+				payload.CommandAcknowledgement.SatelliteId,
+			)
+		default:
+			fmt.Println("Unknown satellite message")
+		}
 	}
 }
