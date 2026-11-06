@@ -9,19 +9,17 @@ from satellite.v1 import satellite_pb2
 class CommunicationClient:
     def __init__(self, gateway_client):
         self.gateway_client = gateway_client
-        self.outgoing = Queue()
 
-    def outgoing_messages(self):
+    def outgoing_messages(self, outgoing):
         while True:
-            message = self.outgoing.get()
-            yield message
+            message = outgoing.get()
 
             if message is None:  ##when does this happen?
                 return
 
             yield message
 
-    def handle_message(self, message):
+    def handle_message(self, message, outgoing):
         if message.HasField("ping"):
             ping = message.ping
 
@@ -37,16 +35,18 @@ class CommunicationClient:
                 )
             )
 
-            self.outgoing.put(response)
+            outgoing.put(response)
 
     def run(self, stop: Event):
         retry_delay = 2
 
         while not stop.is_set():
+            outgoing = Queue()
+
             try:
                 logging.info("Connecting to Go gateway...")
 
-                responses = self.gateway_client.communicate(self.outgoing_messages())
+                responses = self.gateway_client.communicate(self.outgoing_messages(outgoing))
                 ## Live iterator connected to our gRPC stream.
 
                 logging.info("Communication stream started")
@@ -55,7 +55,7 @@ class CommunicationClient:
                     if stop.is_set():
                         return
 
-                    self.handle_message(message)
+                    self.handle_message(message, outgoing)
 
                 logging.warning("Communication stream closed")
 
@@ -68,10 +68,12 @@ class CommunicationClient:
                     error,
                 )
 
+            finally:
+                outgoing.put(None)
+
             if not stop.is_set():
                 logging.info(
                     "Reconnecting in %s seconds...",
                     retry_delay,
                 )
-
-            stop.wait(retry_delay)
+                stop.wait(retry_delay)
