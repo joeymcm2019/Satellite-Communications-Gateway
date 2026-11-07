@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/google/uuid"
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
 	"google.golang.org/grpc"
 )
@@ -97,4 +98,25 @@ func (m *CommunicationManager) ClearStream(
 	if m.stream == stream {
 		m.stream = nil
 	}
+}
+
+func (m *CommunicationManager) SendRecoveryCommand(satelliteID string) error {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+
+	if m.stream == nil {
+		return fmt.Errorf("No active communication stream")
+	}
+
+	message := &satellitev1.GatewayMessage{
+		Payload: &satellitev1.GatewayMessage_Command{
+			Command: &satellitev1.Command{
+				CommandId:   uuid.NewString(),
+				SatelliteId: satelliteID,
+				Action:      "RESUME_TELEMETRY",
+			},
+		},
+	}
+
+	return m.stream.Send(message)
 }

@@ -16,4 +16,3 @@ class Satellite:
     communication_outage: bool = False
     outage_ticks_remaining: int = 0
     sequence_number: int = 0
-    telemetrySoftwareDown: bool = False

@@ -73,16 +73,33 @@ func (s *GatewayServer) Communicate(
 
 		switch payload := message.Payload.(type) {
 		case *satellitev1.SatelliteMessage_PingResponse:
+			ping := payload.PingResponse
+
 			fmt.Printf(
 				"Ping response from %s: healthy=%t\n",
-				payload.PingResponse.SatelliteId,
-				payload.PingResponse.Healthy,
+				ping.SatelliteId,
+				ping.Healthy,
 			)
 			fmt.Println()
+
+			if !ping.Healthy {
+				fmt.Printf(
+					"Attempting recovery for satellite %s\n",
+					ping.SatelliteId,
+				)
+
+				if err := s.communications.SendRecoveryCommand(ping.SatelliteId); err != nil {
+					fmt.Printf("Recovery command failed: %v\n", err)
+				}
+			}
 		case *satellitev1.SatelliteMessage_CommandAcknowledgement:
+			ack := payload.CommandAcknowledgement
+
 			fmt.Printf(
 				"Command acknowledged by %s\n",
-				payload.CommandAcknowledgement.SatelliteId,
+				ack.SatelliteId,
+				ack.Accepted,
+				ack.Detail,
 			)
 			fmt.Println()
 		default:

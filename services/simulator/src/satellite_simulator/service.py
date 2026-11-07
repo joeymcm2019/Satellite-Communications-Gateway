@@ -2,7 +2,7 @@ import logging
 import random
 import time
 from datetime import timedelta
-from threading import Event, Thread
+from threading import Event, Lock, Thread
 
 import grpc
 from google.protobuf.timestamp_pb2 import Timestamp
@@ -21,7 +21,12 @@ class SimulatorService:
         self.config = config
         self.client = client
         self.satellites = satellites
-        self.communication_client = CommunicationClient(self.client)
+
+        self.satellite_lock = Lock()
+
+        self.communication_client = CommunicationClient(
+            self.client, self.satellites, self.satellite_lock
+        )
 
     def generate_telemetry(self, satellite: Satellite) -> satellite_pb2.SendTelemetryRequest:
         satellite.sequence_number += 1
@@ -104,9 +109,11 @@ class SimulatorService:
                     continue
 
                 telemetry = self.generate_telemetry(satellite)
-                self.simulate_outage(satellite)
+                with self.satellite_lock:
+                    self.simulate_outage(satellite)
+                    in_outage = satellite.communication_outage
 
-                if satellite.communication_outage:
+                if in_outage:
                     logger.warning(
                         "Satellite %s is in communication outage, skipping telemetry %d",
                         satellite_id,
