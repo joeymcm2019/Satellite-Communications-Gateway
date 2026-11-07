@@ -87,16 +87,18 @@ func (s *GatewayServer) Communicate(
 					"Attempting recovery for satellite %s\n",
 					ping.SatelliteId,
 				)
+				fmt.Println()
 
 				if err := s.communications.SendRecoveryCommand(ping.SatelliteId); err != nil {
 					fmt.Printf("Recovery command failed: %v\n", err)
+					fmt.Println()
 				}
 			}
-		case *satellitev1.SatelliteMessage_CommandAcknowledgement:
-			ack := payload.CommandAcknowledgement
+		case *satellitev1.SatelliteMessage_CommandAcknowledgment:
+			ack := payload.CommandAcknowledgment
 
 			fmt.Printf(
-				"Command acknowledged by %s\n",
+				"Command acknowledged by %s. Accepted=%t, details=%s\n",
 				ack.SatelliteId,
 				ack.Accepted,
 				ack.Detail,

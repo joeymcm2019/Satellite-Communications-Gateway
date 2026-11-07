@@ -497,7 +497,7 @@ type SatelliteMessage struct {
 	// Types that are valid to be assigned to Payload:
 	//
 	//	*SatelliteMessage_PingResponse
-	//	*SatelliteMessage_CommandAcknowledgement
+	//	*SatelliteMessage_CommandAcknowledgment
 	Payload       isSatelliteMessage_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -549,10 +549,10 @@ func (x *SatelliteMessage) GetPingResponse() *PingResponse {
 	return nil
 }
 
-func (x *SatelliteMessage) GetCommandAcknowledgement() *CommandAcknowledgment {
+func (x *SatelliteMessage) GetCommandAcknowledgment() *CommandAcknowledgment {
 	if x != nil {
-		if x, ok := x.Payload.(*SatelliteMessage_CommandAcknowledgement); ok {
-			return x.CommandAcknowledgement
+		if x, ok := x.Payload.(*SatelliteMessage_CommandAcknowledgment); ok {
+			return x.CommandAcknowledgment
 		}
 	}
 	return nil
@@ -566,13 +566,13 @@ type SatelliteMessage_PingResponse struct {
 	PingResponse *PingResponse `protobuf:"bytes,1,opt,name=ping_response,json=pingResponse,proto3,oneof"`
 }
 
-type SatelliteMessage_CommandAcknowledgement struct {
-	CommandAcknowledgement *CommandAcknowledgment `protobuf:"bytes,2,opt,name=command_acknowledgement,json=commandAcknowledgement,proto3,oneof"`
+type SatelliteMessage_CommandAcknowledgment struct {
+	CommandAcknowledgment *CommandAcknowledgment `protobuf:"bytes,2,opt,name=command_acknowledgment,json=commandAcknowledgment,proto3,oneof"`
 }
 
 func (*SatelliteMessage_PingResponse) isSatelliteMessage_Payload() {}
 
-func (*SatelliteMessage_CommandAcknowledgement) isSatelliteMessage_Payload() {}
+func (*SatelliteMessage_CommandAcknowledgment) isSatelliteMessage_Payload() {}
 
 type GatewayMessage struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -691,10 +691,10 @@ const file_satellite_v1_satellite_proto_rawDesc = "" +
 	"\fsatellite_id\x18\x01 \x01(\tR\vsatelliteId\"K\n" +
 	"\fPingResponse\x12!\n" +
 	"\fsatellite_id\x18\x01 \x01(\tR\vsatelliteId\x12\x18\n" +
-	"\ahealthy\x18\x02 \x01(\bR\ahealthy\"\xc0\x01\n" +
+	"\ahealthy\x18\x02 \x01(\bR\ahealthy\"\xbe\x01\n" +
 	"\x10SatelliteMessage\x12A\n" +
-	"\rping_response\x18\x01 \x01(\v2\x1a.satellite.v1.PingResponseH\x00R\fpingResponse\x12^\n" +
-	"\x17command_acknowledgement\x18\x02 \x01(\v2#.satellite.v1.CommandAcknowledgmentH\x00R\x16commandAcknowledgementB\t\n" +
+	"\rping_response\x18\x01 \x01(\v2\x1a.satellite.v1.PingResponseH\x00R\fpingResponse\x12\\\n" +
+	"\x16command_acknowledgment\x18\x02 \x01(\v2#.satellite.v1.CommandAcknowledgmentH\x00R\x15commandAcknowledgmentB\t\n" +
 	"\apayload\"\x7f\n" +
 	"\x0eGatewayMessage\x12/\n" +
 	"\x04ping\x18\x01 \x01(\v2\x19.satellite.v1.PingRequestH\x00R\x04ping\x121\n" +
@@ -742,7 +742,7 @@ var file_satellite_v1_satellite_proto_depIdxs = []int32{
 	0,  // 2: satellite.v1.SendTelemetryRequest.connection_status:type_name -> satellite.v1.ConnectionStatus
 	11, // 3: satellite.v1.SendTelemetryRequest.expected_interval_seconds:type_name -> google.protobuf.Duration
 	7,  // 4: satellite.v1.SatelliteMessage.ping_response:type_name -> satellite.v1.PingResponse
-	4,  // 5: satellite.v1.SatelliteMessage.command_acknowledgement:type_name -> satellite.v1.CommandAcknowledgment
+	4,  // 5: satellite.v1.SatelliteMessage.command_acknowledgment:type_name -> satellite.v1.CommandAcknowledgment
 	6,  // 6: satellite.v1.GatewayMessage.ping:type_name -> satellite.v1.PingRequest
 	3,  // 7: satellite.v1.GatewayMessage.command:type_name -> satellite.v1.Command
 	2,  // 8: satellite.v1.SatelliteGatewayService.SendTelemetry:input_type -> satellite.v1.SendTelemetryRequest
@@ -763,7 +763,7 @@ func file_satellite_v1_satellite_proto_init() {
 	}
 	file_satellite_v1_satellite_proto_msgTypes[7].OneofWrappers = []any{
 		(*SatelliteMessage_PingResponse)(nil),
-		(*SatelliteMessage_CommandAcknowledgement)(nil),
+		(*SatelliteMessage_CommandAcknowledgment)(nil),
 	}
 	file_satellite_v1_satellite_proto_msgTypes[8].OneofWrappers = []any{
 		(*GatewayMessage_Ping)(nil),

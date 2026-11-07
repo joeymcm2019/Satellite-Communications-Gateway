@@ -58,7 +58,7 @@ message PingResponse {
 message SatelliteMessage {
   oneof payload {
     PingResponse ping_response = 1;
-    CommandAcknowledgment command_acknowledgement = 2;
+    CommandAcknowledgment command_acknowledgment = 2;
   }
 }
 
