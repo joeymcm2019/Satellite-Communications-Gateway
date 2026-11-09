@@ -9,9 +9,12 @@ import (
 	"time"
 
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
+	"github.com/satellite-communications/gateway/internal/model"
 )
 
 type SatelliteState struct {
+	name             string
+	batteryPercent   float64
 	lastReceivedAt   time.Time
 	previousSequence uint64
 	expectedInterval time.Duration
@@ -55,6 +58,8 @@ func (s *SatelliteTrackers) RecordTelemetry(
 	satelliteID := satellite.GetSatelliteId()
 	sat, exists := satellites[satelliteID]
 	currentSequence := req.GetSequenceNumber()
+	name := satellite.GetName()
+	batteryPercent := req.GetBatteryPercent()
 
 	if exists {
 		previousSequence := sat.previousSequence
@@ -81,6 +86,7 @@ func (s *SatelliteTrackers) RecordTelemetry(
 
 		sat.lastReceivedAt = time.Now()
 		sat.previousSequence = currentSequence
+		sat.batteryPercent = batteryPercent
 		satellites[satelliteID] = sat
 	} else {
 		duration := req.GetExpectedIntervalSeconds()
@@ -98,6 +104,8 @@ func (s *SatelliteTrackers) RecordTelemetry(
 		}
 
 		satellites[satelliteID] = SatelliteState{
+			name:             name,
+			batteryPercent:   batteryPercent,
 			lastReceivedAt:   time.Now(),
 			previousSequence: currentSequence,
 			expectedInterval: duration.AsDuration(),
@@ -200,4 +208,32 @@ func (s *SatelliteTrackers) checkInactiveSatellites() {
 	for _, id := range inactiveSatellites {
 		s.diagnosticRequests <- id
 	}
+}
+
+func (s *SatelliteTrackers) GetSnapshot() []model.SatelliteSnapshot {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	snapshots := make([]model.SatelliteSnapshot, 0, len(s.satellites))
+
+	for id, sat := range s.satellites {
+		status := "online"
+
+		if sat.expectedInterval > 0 &&
+			time.Since(sat.lastReceivedAt) >= sat.expectedInterval+1 {
+			status = "inactive"
+		}
+
+		snapshots = append(snapshots, model.SatelliteSnapshot{
+			ID:                      id,
+			Name:                    sat.name,
+			Status:                  status,
+			BatteryPercent:          sat.batteryPercent,
+			SequenceNumber:          sat.previousSequence,
+			LastSeen:                sat.lastReceivedAt,
+			ExpectedIntervalSeconds: sat.expectedInterval.Seconds(),
+		})
+	}
+
+	return snapshots
 }

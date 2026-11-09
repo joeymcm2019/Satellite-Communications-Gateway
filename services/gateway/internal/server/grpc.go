@@ -6,6 +6,7 @@ import (
 	"io"
 
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
+	"github.com/satellite-communications/gateway/internal/model"
 	"google.golang.org/grpc"
 )
 
@@ -27,6 +28,10 @@ func NewGatewayServer() *GatewayServer {
 		tracker:        tracker,
 		communications: manager,
 	}
+}
+
+func (s *GatewayServer) GetSnapshot() []model.SatelliteSnapshot {
+	return s.tracker.GetSnapshot()
 }
 
 func (s *GatewayServer) SendTelemetry(

@@ -34,8 +34,11 @@ func main() {
 
 	defer stop()
 
+	gatewayServer := server.NewGatewayServer()
+
 	httpServer := &http.Server{
-		Addr: ":" + cfg.HTTPPort, Handler: httpserver.NewHandler(),
+		Addr:              ":" + cfg.HTTPPort,
+		Handler:           httpserver.NewHandler(gatewayServer),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
 		WriteTimeout:      10 * time.Second,
@@ -44,7 +47,7 @@ func main() {
 
 	failures := make(chan error, 1)
 
-	grpcServer, err := startGRPCServer(cfg.GRPCPort, ctx)
+	grpcServer, err := startGRPCServer(cfg.GRPCPort, ctx, gatewayServer)
 
 	if err != nil {
 		log.Fatal(err)
@@ -95,14 +98,13 @@ func main() {
 /*
 logs errors from Serve() rather than forwarding them to main error channel.
 */
-func startGRPCServer(port string, ctx context.Context) (*grpc.Server, error) {
+func startGRPCServer(port string, ctx context.Context, gatewayServer *server.GatewayServer) (*grpc.Server, error) {
 	listener, err := net.Listen("tcp", ":"+port)
 	if err != nil {
 		return nil, err
 	}
 
 	grpcServer := grpc.NewServer()
-	gatewayServer := server.NewGatewayServer()
 
 	go gatewayServer.MonitorSatellites(ctx)
 	go gatewayServer.MonitorCommunications(ctx)
