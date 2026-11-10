@@ -132,6 +132,7 @@ type SendTelemetryRequest struct {
 	ConnectionStatus        ConnectionStatus       `protobuf:"varint,4,opt,name=connection_status,json=connectionStatus,proto3,enum=satellite.v1.ConnectionStatus" json:"connection_status,omitempty"`
 	SequenceNumber          uint64                 `protobuf:"varint,5,opt,name=sequence_number,json=sequenceNumber,proto3" json:"sequence_number,omitempty"`
 	ExpectedIntervalSeconds *durationpb.Duration   `protobuf:"bytes,6,opt,name=expected_interval_seconds,json=expectedIntervalSeconds,proto3" json:"expected_interval_seconds,omitempty"`
+	Charging                bool                   `protobuf:"varint,7,opt,name=charging,proto3" json:"charging,omitempty"`
 	unknownFields           protoimpl.UnknownFields
 	sizeCache               protoimpl.SizeCache
 }
@@ -206,6 +207,13 @@ func (x *SendTelemetryRequest) GetExpectedIntervalSeconds() *durationpb.Duration
 		return x.ExpectedIntervalSeconds
 	}
 	return nil
+}
+
+func (x *SendTelemetryRequest) GetCharging() bool {
+	if x != nil {
+		return x.Charging
+	}
+	return false
 }
 
 type Command struct {
@@ -663,7 +671,7 @@ const file_satellite_v1_satellite_proto_rawDesc = "" +
 	"\x1csatellite/v1/satellite.proto\x12\fsatellite.v1\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"J\n" +
 	"\x11SatelliteIdentity\x12!\n" +
 	"\fsatellite_id\x18\x01 \x01(\tR\vsatelliteId\x12\x12\n" +
-	"\x04name\x18\x02 \x01(\tR\x04name\"\x88\x03\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\xa4\x03\n" +
 	"\x14SendTelemetryRequest\x12=\n" +
 	"\tsatellite\x18\x01 \x01(\v2\x1f.satellite.v1.SatelliteIdentityR\tsatellite\x12;\n" +
 	"\vobserved_at\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
@@ -671,7 +679,8 @@ const file_satellite_v1_satellite_proto_rawDesc = "" +
 	"\x0fbattery_percent\x18\x03 \x01(\x01R\x0ebatteryPercent\x12K\n" +
 	"\x11connection_status\x18\x04 \x01(\x0e2\x1e.satellite.v1.ConnectionStatusR\x10connectionStatus\x12'\n" +
 	"\x0fsequence_number\x18\x05 \x01(\x04R\x0esequenceNumber\x12U\n" +
-	"\x19expected_interval_seconds\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\x17expectedIntervalSeconds\"c\n" +
+	"\x19expected_interval_seconds\x18\x06 \x01(\v2\x19.google.protobuf.DurationR\x17expectedIntervalSeconds\x12\x1a\n" +
+	"\bcharging\x18\a \x01(\bR\bcharging\"c\n" +
 	"\aCommand\x12\x1d\n" +
 	"\n" +
 	"command_id\x18\x01 \x01(\tR\tcommandId\x12!\n" +

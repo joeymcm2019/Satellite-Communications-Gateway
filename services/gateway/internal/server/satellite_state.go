@@ -18,6 +18,7 @@ type SatelliteState struct {
 	lastReceivedAt   time.Time
 	previousSequence uint64
 	expectedInterval time.Duration
+	charging         bool
 }
 
 type SatelliteTrackers struct {
@@ -44,6 +45,7 @@ func PrintTelemetry(req *satellitev1.SendTelemetryRequest) {
 	fmt.Println("Battery:", req.GetBatteryPercent())
 	fmt.Println("Sequence:", req.GetSequenceNumber())
 	fmt.Println("Timestamp:", timestamp.Format("2006-01-02 03:04:05 PM MST"))
+	fmt.Println("Charging:", req.GetCharging())
 	fmt.Println()
 }
 
@@ -60,6 +62,7 @@ func (s *SatelliteTrackers) RecordTelemetry(
 	currentSequence := req.GetSequenceNumber()
 	name := satellite.GetName()
 	batteryPercent := req.GetBatteryPercent()
+	charging := req.GetCharging()
 
 	if exists {
 		previousSequence := sat.previousSequence
@@ -87,6 +90,7 @@ func (s *SatelliteTrackers) RecordTelemetry(
 		sat.lastReceivedAt = time.Now()
 		sat.previousSequence = currentSequence
 		sat.batteryPercent = batteryPercent
+		sat.charging = charging
 		satellites[satelliteID] = sat
 	} else {
 		duration := req.GetExpectedIntervalSeconds()
@@ -109,6 +113,7 @@ func (s *SatelliteTrackers) RecordTelemetry(
 			lastReceivedAt:   time.Now(),
 			previousSequence: currentSequence,
 			expectedInterval: duration.AsDuration(),
+			charging:         charging,
 		}
 
 		select {
@@ -232,6 +237,7 @@ func (s *SatelliteTrackers) GetSnapshot() []model.SatelliteSnapshot {
 			SequenceNumber:          sat.previousSequence,
 			LastSeen:                sat.lastReceivedAt,
 			ExpectedIntervalSeconds: sat.expectedInterval.Seconds(),
+			Charging:                sat.charging,
 		})
 	}
 

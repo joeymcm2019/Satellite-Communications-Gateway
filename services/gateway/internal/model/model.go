@@ -10,4 +10,5 @@ type SatelliteSnapshot struct {
 	SequenceNumber          uint64    `json:"sequence_number"`
 	LastSeen                time.Time `json:"last_seen"`
 	ExpectedIntervalSeconds float64   `json:"expected_interval_seconds"`
+	Charging                bool      `json:"charging"`
 }

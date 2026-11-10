@@ -25,6 +25,7 @@ message SendTelemetryRequest {
   ConnectionStatus connection_status = 4;
   uint64 sequence_number = 5;
   google.protobuf.Duration expected_interval_seconds = 6;
+  bool charging = 7;
 }
 
 message Command {

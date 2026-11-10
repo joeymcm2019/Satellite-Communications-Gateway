@@ -56,6 +56,7 @@ class SimulatorService:
             expected_interval_seconds=timedelta(  ##Todo only want to send this once.
                 seconds=satellite.config.telemetry_interval_seconds
             ),
+            charging=satellite.charging,
         )
 
     def connect_to_gateway(self) -> None:
