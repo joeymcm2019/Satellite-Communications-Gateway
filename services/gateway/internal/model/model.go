@@ -12,3 +12,20 @@ type SatelliteSnapshot struct {
 	ExpectedIntervalSeconds float64   `json:"expected_interval_seconds"`
 	Charging                bool      `json:"charging"`
 }
+
+const (
+	EventTelemetry           = "satellite.telemetry"
+	EventInactive            = "satellite.inactive"
+	EventPingSent            = "satellite.ping_sent"
+	EventPingResponse        = "satellite.ping_response"
+	EventRecoveryRequested   = "satellite.recovery_requested"
+	EventCommandAcknowledged = "satellite.command_acknowledged"
+	EventOnline              = "satellite.online"
+)
+
+type GatewayEvent struct {
+	Type        string         `json:"type"`
+	SatelliteID string         `json:"satellite_id"`
+	Timestamp   time.Time      `json:"timestamp"`
+	Data        map[string]any `json:"data,omitempty"`
+}

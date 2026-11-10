@@ -14,6 +14,7 @@ import (
 
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
 	"github.com/satellite-communications/gateway/internal/config"
+	"github.com/satellite-communications/gateway/internal/events"
 	"github.com/satellite-communications/gateway/internal/httpserver"
 	"github.com/satellite-communications/gateway/internal/server"
 	"google.golang.org/grpc"
@@ -34,14 +35,14 @@ func main() {
 
 	defer stop()
 
-	gatewayServer := server.NewGatewayServer()
+	broadcaster := events.NewBroadcaster()
+	gatewayServer := server.NewGatewayServer(broadcaster)
 
 	httpServer := &http.Server{
 		Addr:              ":" + cfg.HTTPPort,
-		Handler:           httpserver.NewHandler(gatewayServer),
+		Handler:           httpserver.NewHandler(gatewayServer, broadcaster),
 		ReadHeaderTimeout: 5 * time.Second,
 		ReadTimeout:       10 * time.Second,
-		WriteTimeout:      10 * time.Second,
 		IdleTimeout:       60 * time.Second,
 	}
 

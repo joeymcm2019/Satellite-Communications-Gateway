@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/satellite-communications/gateway/internal/events"
 	"github.com/satellite-communications/gateway/internal/model"
 )
 
-func NewHandler(provider SatelliteProvider) http.Handler {
+func NewHandler(provider SatelliteProvider, broadcaster *events.Broadcaster) http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("GET /health", func(w http.ResponseWriter, r *http.Request) {
@@ -26,6 +27,10 @@ func NewHandler(provider SatelliteProvider) http.Handler {
 		); err != nil {
 			return
 		}
+	})
+
+	mux.HandleFunc("GET /ws", func(w http.ResponseWriter, r *http.Request) {
+		handleWebSocket(w, r, broadcaster)
 	})
 
 	return mux

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
+	"github.com/satellite-communications/gateway/internal/events"
 	"github.com/satellite-communications/gateway/internal/model"
 )
 
@@ -26,13 +27,15 @@ type SatelliteTrackers struct {
 	satellites         map[string]SatelliteState
 	intervalChanged    chan struct{}
 	diagnosticRequests chan string
+	broadcaster        *events.Broadcaster
 }
 
-func NewSatelliteTracker() *SatelliteTrackers {
+func NewSatelliteTracker(broadcaster *events.Broadcaster) *SatelliteTrackers {
 	return &SatelliteTrackers{
 		satellites:         make(map[string]SatelliteState),
 		intervalChanged:    make(chan struct{}, 1),
 		diagnosticRequests: make(chan string, 100),
+		broadcaster:        broadcaster,
 	}
 }
 
@@ -52,6 +55,28 @@ func PrintTelemetry(req *satellitev1.SendTelemetryRequest) {
 func (s *SatelliteTrackers) RecordTelemetry(
 	req *satellitev1.SendTelemetryRequest,
 ) {
+
+	if !s.recordTelemetryState(req) {
+		return
+	}
+
+	satellite := req.GetSatellite()
+
+	s.broadcaster.Publish(model.GatewayEvent{
+		Type:        model.EventTelemetry,
+		SatelliteID: satellite.GetSatelliteId(),
+		Timestamp:   time.Now(),
+		Data: map[string]any{
+			"name":            satellite.GetName(),
+			"battery_percent": req.GetBatteryPercent(),
+			"sequence_number": req.GetSequenceNumber(),
+		},
+	})
+}
+
+func (s *SatelliteTrackers) recordTelemetryState(
+	req *satellitev1.SendTelemetryRequest,
+) bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -97,14 +122,14 @@ func (s *SatelliteTrackers) RecordTelemetry(
 
 		if duration == nil {
 			fmt.Println("Error. Expected Interval is nil.")
-			return
+			return false
 		}
 
 		interval := duration.AsDuration()
 
 		if interval <= 0 {
 			fmt.Println("Error. Expected interval must be positive.")
-			return
+			return false
 		}
 
 		satellites[satelliteID] = SatelliteState{
@@ -121,6 +146,8 @@ func (s *SatelliteTrackers) RecordTelemetry(
 		default: //prevents telemetry handler from blocking if a notification is already waiting
 		}
 	}
+
+	return true
 }
 
 func getMissedTelemetryMsg(sequence uint64, previousSequence uint64) string {

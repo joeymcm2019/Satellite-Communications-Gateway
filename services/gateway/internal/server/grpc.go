@@ -6,6 +6,7 @@ import (
 	"io"
 
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
+	"github.com/satellite-communications/gateway/internal/events"
 	"github.com/satellite-communications/gateway/internal/model"
 	"google.golang.org/grpc"
 )
@@ -15,10 +16,11 @@ type GatewayServer struct {
 
 	communications *CommunicationManager
 	tracker        *SatelliteTrackers
+	broadcaster    *events.Broadcaster
 }
 
-func NewGatewayServer() *GatewayServer {
-	tracker := NewSatelliteTracker()
+func NewGatewayServer(broadcaster *events.Broadcaster) *GatewayServer {
+	tracker := NewSatelliteTracker(broadcaster)
 
 	manager := NewCommunicationManager(
 		tracker.diagnosticRequests,
@@ -26,6 +28,7 @@ func NewGatewayServer() *GatewayServer {
 
 	return &GatewayServer{
 		tracker:        tracker,
+		broadcaster:    broadcaster,
 		communications: manager,
 	}
 }
