@@ -6,6 +6,8 @@ The project demonstrates distributed communication, concurrent state tracking, b
 
 > **Current status:** Telemetry, automated diagnostics and recovery, satellite snapshots, and live dashboard events are implemented. Local setup requires the Python dependencies and generated-code import path documented below. Tests and container configuration still contain scaffold-era inconsistencies; see [Development notes](#development-notes). Manual dashboard command controls remain disabled.
 
+<img width="1327" height="735" alt="Screenshot 2026-11-11 at 11 17 17 AM" src="https://github.com/user-attachments/assets/a6b52c6b-f680-484b-ad84-4b8ae7b85753" />
+
 ## Key features
 
 - Seven simulated satellites with independent transmission intervals, sequence numbers, battery discharge/charging, and random telemetry outages.
