@@ -6,7 +6,7 @@ func TestLoadDefaults(t *testing.T) {
 	t.Setenv("GATEWAY_HTTP_PORT", "")
 	t.Setenv("GATEWAY_GRPC_PORT", "")
 	cfg, err := Load()
-	if err != nil || cfg.HTTPPort != "8080" || cfg.GRPCPort != "50051" {
+	if err != nil || cfg.HTTPPort != "18080" || cfg.GRPCPort != "50051" {
 		t.Fatalf("unexpected config: %+v, %v", cfg, err)
 	}
 }

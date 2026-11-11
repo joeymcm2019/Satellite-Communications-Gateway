@@ -1,0 +1,9 @@
+.git
+**/.venv
+**/node_modules
+**/.next
+**/__pycache__
+**/.ruff_cache
+**/.DS_Store
+.env
+**/.env

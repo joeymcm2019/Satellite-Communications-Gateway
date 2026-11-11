@@ -1,0 +1,39 @@
+# Stage 1: Build Go gateway
+FROM golang:1.26-alpine AS go-build
+
+WORKDIR /src
+COPY services/gateway/ .
+
+RUN go test ./... && \
+  CGO_ENABLED=0 go build -o /gateway ./cmd/gateway
+
+
+# Stage 2: Python + Go runtime
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# Install Python simulator
+COPY services/simulator/pyproject.toml .
+COPY services/simulator/src ./src
+COPY services/simulator/gen ./gen
+
+RUN pip install --no-cache-dir . grpcio protobuf
+
+# Copy compiled Go gateway
+COPY --from=go-build /gateway /usr/local/bin/gateway
+
+# Make generated Python protobuf modules importable
+ENV PYTHONPATH=/app/gen
+
+# Internal gRPC connection
+ENV GATEWAY_HTTP_PORT=18080
+ENV GATEWAY_GRPC_PORT=50051
+ENV GATEWAY_GRPC_ADDRESS=127.0.0.1:50051
+
+# Start both processes
+COPY scripts/render-start.py /app/render-start.py
+
+EXPOSE 18080
+
+CMD ["python", "/app/render-start.py"]
