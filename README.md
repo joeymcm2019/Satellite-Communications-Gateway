@@ -95,7 +95,7 @@ sequenceDiagram
     S->>G: SendTelemetry(sequence N)
     G-->>S: TelemetryReceipt(accepted=true)
     G-->>B: satellite.telemetry (WebSocket)
-    Note over S: Simulated outage suppresses samples; sequence advances
+    Note over S: Simulated outage suppresses samples while sequence advances
     Note over G: Periodic scan observes at least 3 missed cycles
     G-->>B: satellite.inactive
     G->>S: PingRequest (Communicate stream)
