@@ -66,7 +66,7 @@ class CommunicationClient:
                 satellite.outage_ticks_remaining = 0
 
                 accepted = True
-                detail = "Telemetry transmission restored"
+                detail = "Telemetry restored"
 
         if accepted:
             logging.info(

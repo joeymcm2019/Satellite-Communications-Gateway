@@ -52,19 +52,39 @@ func PrintTelemetry(req *satellitev1.SendTelemetryRequest) {
 	fmt.Println()
 }
 
+type BackOnline struct {
+	backOnline bool
+	missedMsg  string
+}
+
 func (s *SatelliteTrackers) RecordTelemetry(
 	req *satellitev1.SendTelemetryRequest,
 ) {
 
-	if !s.recordTelemetryState(req) {
+	success, online := s.recordTelemetryState(req)
+
+	if !success {
 		return
 	}
 
 	satellite := req.GetSatellite()
 
+	satelliteID := satellite.GetSatelliteId()
+
+	if online.backOnline {
+		s.broadcaster.Publish(model.GatewayEvent{
+			Type:        model.EventOnline,
+			SatelliteID: satelliteID,
+			Timestamp:   time.Now(),
+			Data: map[string]any{
+				"msg": online.missedMsg,
+			},
+		})
+	}
+
 	s.broadcaster.Publish(model.GatewayEvent{
 		Type:        model.EventTelemetry,
-		SatelliteID: satellite.GetSatelliteId(),
+		SatelliteID: satelliteID,
 		Timestamp:   time.Now(),
 		Data: map[string]any{
 			"name":            satellite.GetName(),
@@ -72,11 +92,12 @@ func (s *SatelliteTrackers) RecordTelemetry(
 			"sequence_number": req.GetSequenceNumber(),
 		},
 	})
+
 }
 
 func (s *SatelliteTrackers) recordTelemetryState(
 	req *satellitev1.SendTelemetryRequest,
-) bool {
+) (bool, BackOnline) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -88,15 +109,26 @@ func (s *SatelliteTrackers) recordTelemetryState(
 	name := satellite.GetName()
 	batteryPercent := req.GetBatteryPercent()
 	charging := req.GetCharging()
+	backOnline := false
+	missedMsg := ""
+
+	online := BackOnline{
+		backOnline: backOnline,
+		missedMsg:  missedMsg,
+	}
 
 	if exists {
 		previousSequence := sat.previousSequence
 		deltaSequence := currentSequence - previousSequence
 
 		if deltaSequence > 1 && currentSequence > previousSequence { //missed telemetry(s)
+			missedMsg = getMissedTelemetryMsg(currentSequence, previousSequence)
+			online.missedMsg = missedMsg
+			online.backOnline = true
+
 			fmt.Println(
 				satellite.GetName()+":",
-				getMissedTelemetryMsg(currentSequence, previousSequence),
+				missedMsg,
 			)
 			fmt.Println()
 		}
@@ -122,14 +154,14 @@ func (s *SatelliteTrackers) recordTelemetryState(
 
 		if duration == nil {
 			fmt.Println("Error. Expected Interval is nil.")
-			return false
+			return false, online
 		}
 
 		interval := duration.AsDuration()
 
 		if interval <= 0 {
 			fmt.Println("Error. Expected interval must be positive.")
-			return false
+			return false, online
 		}
 
 		satellites[satelliteID] = SatelliteState{
@@ -147,7 +179,7 @@ func (s *SatelliteTrackers) recordTelemetryState(
 		}
 	}
 
-	return true
+	return true, online
 }
 
 func getMissedTelemetryMsg(sequence uint64, previousSequence uint64) string {
@@ -216,29 +248,51 @@ func (s *SatelliteTrackers) MonitorSatellites(ctx context.Context) {
 }
 
 func (s *SatelliteTrackers) checkInactiveSatellites() {
+	type InactiveSatellite struct {
+		id            string
+		name          string
+		cycles_missed int
+	}
+
+	var inactiveSatellites []InactiveSatellite
+
 	s.mu.Lock()
 
-	var inactiveSatellites []string
-
 	for id, sat := range s.satellites {
-		if sat.expectedInterval.Seconds() == 0 {
-			return
+		if sat.expectedInterval.Seconds() <= 0 {
+			continue
 		}
-		cyclesMissed := int(math.Floor(time.Since(sat.lastReceivedAt).Seconds() / sat.expectedInterval.Seconds()))
-		if cyclesMissed >= 3 {
-			fmt.Printf(
-				"Satellite %s is inactive and has missed %d cycles.\n",
-				id,
-				cyclesMissed,
-			)
-			fmt.Println()
-			inactiveSatellites = append(inactiveSatellites, id)
+		cycles_missed := int(math.Floor(time.Since(sat.lastReceivedAt).Seconds() / sat.expectedInterval.Seconds()))
+		if cycles_missed >= 3 {
+			inactiveSatellites = append(inactiveSatellites, InactiveSatellite{
+				id:            id,
+				name:          sat.name,
+				cycles_missed: cycles_missed,
+			})
 		}
 	}
 
 	s.mu.Unlock()
-	for _, id := range inactiveSatellites {
-		s.diagnosticRequests <- id
+
+	for _, satellite := range inactiveSatellites {
+		fmt.Printf(
+			"Satellite %s is inactive and has missed %d cycles.\n",
+			satellite.id,
+			satellite.cycles_missed,
+		)
+		fmt.Println()
+
+		s.diagnosticRequests <- satellite.id
+
+		s.broadcaster.Publish(model.GatewayEvent{
+			Type:        model.EventInactive,
+			SatelliteID: satellite.id,
+			Timestamp:   time.Now(),
+			Data: map[string]any{
+				"name":          satellite.name,
+				"cycles_missed": satellite.cycles_missed,
+			},
+		})
 	}
 }
 
@@ -252,7 +306,7 @@ func (s *SatelliteTrackers) GetSnapshot() []model.SatelliteSnapshot {
 		status := "online"
 
 		if sat.expectedInterval > 0 &&
-			time.Since(sat.lastReceivedAt) >= sat.expectedInterval+1 {
+			time.Since(sat.lastReceivedAt) >= sat.expectedInterval+time.Second/2 {
 			status = "inactive"
 		}
 

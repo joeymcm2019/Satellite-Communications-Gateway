@@ -4,9 +4,12 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 
 	"github.com/google/uuid"
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
+	"github.com/satellite-communications/gateway/internal/events"
+	"github.com/satellite-communications/gateway/internal/model"
 	"google.golang.org/grpc"
 )
 
@@ -18,13 +21,16 @@ type CommunicationManager struct {
 		satellitev1.SatelliteMessage,
 		satellitev1.GatewayMessage,
 	]
+	broadcaster *events.Broadcaster
 }
 
 func NewCommunicationManager(
 	diagnosticRequests <-chan string,
+	broadcaster *events.Broadcaster,
 ) *CommunicationManager {
 	return &CommunicationManager{
 		diagnosticRequests: diagnosticRequests,
+		broadcaster:        broadcaster,
 	}
 }
 
@@ -36,7 +42,6 @@ func (m *CommunicationManager) SetStream(
 ) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-
 	m.stream = stream
 }
 
@@ -56,6 +61,12 @@ func (m *CommunicationManager) Run(ctx context.Context) {
 				)
 				continue
 			}
+
+			m.broadcaster.Publish(model.GatewayEvent{
+				Type:        model.EventPingSent,
+				SatelliteID: satelliteID,
+				Timestamp:   time.Now(),
+			})
 
 			fmt.Println("Ping sent to:", satelliteID)
 			fmt.Println()
@@ -102,7 +113,6 @@ func (m *CommunicationManager) ClearStream(
 
 func (m *CommunicationManager) SendRecoveryCommand(satelliteID string) error {
 	m.mu.Lock()
-	defer m.mu.Unlock()
 
 	if m.stream == nil {
 		return fmt.Errorf("No active communication stream")
@@ -118,5 +128,18 @@ func (m *CommunicationManager) SendRecoveryCommand(satelliteID string) error {
 		},
 	}
 
-	return m.stream.Send(message)
+	err := m.stream.Send(message)
+	m.mu.Unlock()
+
+	if err != nil {
+		return err
+	}
+
+	m.broadcaster.Publish(model.GatewayEvent{
+		Type:        model.EventRecoveryRequested,
+		SatelliteID: satelliteID,
+		Timestamp:   time.Now(),
+	})
+
+	return nil
 }

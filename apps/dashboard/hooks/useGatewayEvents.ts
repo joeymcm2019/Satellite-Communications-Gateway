@@ -1,28 +1,36 @@
 "use client";
 
-import {useEffect, useState, useMemo} from "react";
+import { useEffect, useState, useMemo } from "react";
+import type { GatewayEventType } from "@/types/gatewayEvent";
 
 export interface GatewayEvent {
-  type: string;
+  type: GatewayEventType;
   satellite_id: string;
   timestamp: string;
   data?: {
     name?: string;
     battery_percent?: number;
     sequence_number?: number;
+    cycles_missed?: number;
+    healthy?: boolean;
+    accepted?: boolean;
+    detail?: string;
+    msg?: string;
   }
 }
+
+const MAX_EVENTS = 1000;
 
 export function useGatewayEvents(){
   const [events, setEvents] = useState<GatewayEvent[]>([]);
   const [connected, setConnected] = useState(false);
 
   const telemetryEvents = useMemo(
-    () => events.filter((event) => event.type = "satellite.telemetry"
+    () => events.filter((event) => event.type === "satellite.telemetry"
   ),[events])
 
   const diagnosticEvents = useMemo(() => {
-    events.filter((event) =>
+    return events.filter((event) =>
     [
       "satellite.inactive",
       "satellite.ping_sent",
@@ -31,7 +39,7 @@ export function useGatewayEvents(){
   },[events])
 
   const recoveryEvents = useMemo(() => {
-    events.filter((event) => [
+    return events.filter((event) => [
       "satellite.recovery_requested",
       "satellite.command_acknowledged",
       "satellite.online",
@@ -57,7 +65,7 @@ export function useGatewayEvents(){
           setEvents((prev) => [
             event,
             ...prev,
-          ].slice(0,300))
+          ].slice(0,MAX_EVENTS))
         } catch (error) {
           console.error("Invalid gateway events:", error);
         }

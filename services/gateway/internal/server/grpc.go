@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"time"
 
 	satellitev1 "github.com/satellite-communications/gateway/gen/satellite/v1"
 	"github.com/satellite-communications/gateway/internal/events"
@@ -24,6 +25,7 @@ func NewGatewayServer(broadcaster *events.Broadcaster) *GatewayServer {
 
 	manager := NewCommunicationManager(
 		tracker.diagnosticRequests,
+		broadcaster,
 	)
 
 	return &GatewayServer{
@@ -90,6 +92,15 @@ func (s *GatewayServer) Communicate(
 			)
 			fmt.Println()
 
+			s.broadcaster.Publish(model.GatewayEvent{
+				Type:        model.EventPingResponse,
+				SatelliteID: ping.SatelliteId,
+				Timestamp:   time.Now(),
+				Data: map[string]any{
+					"healthy": ping.Healthy,
+				},
+			})
+
 			if !ping.Healthy {
 				fmt.Printf(
 					"Attempting recovery for satellite %s\n",
@@ -111,6 +122,17 @@ func (s *GatewayServer) Communicate(
 				ack.Accepted,
 				ack.Detail,
 			)
+
+			s.broadcaster.Publish(model.GatewayEvent{
+				Type:        model.EventCommandAcknowledged,
+				SatelliteID: ack.SatelliteId,
+				Timestamp:   time.Now(),
+				Data: map[string]any{
+					"accepted": ack.Accepted,
+					"detail":   ack.Detail,
+				},
+			})
+
 			fmt.Println()
 		default:
 			fmt.Println("Unknown satellite message")

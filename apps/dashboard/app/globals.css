@@ -21,6 +21,11 @@ p { line-height:1.6; }
   min-width:0;
 }
 
+.minH {
+  min-height: 694px;
+}
+
+
 .panel-heading { margin-bottom:12px; }
 .metrics { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
 .metric { border-left:1px solid var(--border); padding-left:14px; }
@@ -126,7 +131,48 @@ p { line-height:1.6; }
   background: #d2fffa;
 }
 
-.log-tag { color:var(--accent); font-size:10px; }
+.log-tag {
+  color:var(--accent);
+  font-size:10px;
+  width: 150px;
+}
+
+.event-inactive {
+  color: yellow;
+}
+
+.event-ping_sent {
+  color: rgb(187, 255, 0);
+}
+
+.event-ping_response {
+  color: rgb(0, 128, 255);
+}
+
+.event-recovery_requested {
+  color: rgb(250, 0, 250);
+}
+
+.event-command_acknowledged {
+  color: rgb(0, 191, 255);
+}
+
+.event-online {
+  color: rgb(0, 255, 0);
+}
+
+.healthy-false {
+  color: red;
+}
+
+.healthy-true {
+  color: rgb(0, 255, 0);
+}
+
+.small {
+  /* font-size: 10px; */
+}
+
 .log small { line-height:1.9; }
 .empty { color:var(--muted); padding:42px 0; text-align:center; font-size:12px; border:1px dashed var(--border); border-radius:6px; margin-top:16px; }
 fieldset { padding:0; margin:20px 0 0; border:0; }
