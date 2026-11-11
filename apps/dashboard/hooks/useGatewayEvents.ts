@@ -52,7 +52,11 @@ export function useGatewayEvents(){
     let stopped = false;
 
     const connect = () => {
-      socket = new WebSocket("ws://localhost:18080/ws");
+      const gatewayWsUrl =
+        process.env.NEXT_PUBLIC_GATEWAY_WS_URL ??
+        "ws://localhost:18080/ws";
+
+      socket = new WebSocket(gatewayWsUrl);
 
       socket.onopen = () => {
         setConnected(true)

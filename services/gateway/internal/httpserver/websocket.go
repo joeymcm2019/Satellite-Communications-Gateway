@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"os"
 	"time"
 
 	"github.com/coder/websocket"
@@ -17,7 +18,10 @@ func handleWebSocket(
 	broadcaster *events.Broadcaster,
 ) {
 	conn, err := websocket.Accept(w, r, &websocket.AcceptOptions{
-		OriginPatterns: []string{"localhost:*"},
+		OriginPatterns: []string{
+			"localhost:*",
+			os.Getenv("DASHBOARD_ORIGIN"),
+		},
 	})
 	if err != nil {
 		log.Printf("WebSocket connection failed: %v", err)
